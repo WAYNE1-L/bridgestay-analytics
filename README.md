@@ -4,13 +4,12 @@ A rental property calculator built with React, TypeScript, Vite, and Tailwind CS
 
 ## Features
 
-### ✅ Step 4 - PDF Export
-- [x] Installed jsPDF and html2canvas libraries
-- [x] Created PdfExportButton component with dynamic imports
-- [x] Added report-root ID wrapper for PDF capture
-- [x] PDF includes header logo, chart, and KPI table
-- [x] Multi-page PDF support with pagination
-- [x] Filename includes current date (YYYYMMDD format)
+### ✅ Step 5 - Input Icons
+- [x] Installed lucide-react icon library
+- [x] Added contextual icons to input fields
+- [x] Icons positioned as left adornments
+- [x] Proper accessibility with aria-hidden for decorative icons
+- [x] Semantic icon mapping (DollarSign, Percent, Calendar, Wrench, Shield)
 
 ## How to Run
 

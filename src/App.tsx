@@ -4,6 +4,7 @@ import { formatCurrency, formatPercent } from './lib/format'
 import type { CalculatorResults } from './types/results'
 import { AmortizationChart } from './components/AmortizationChart'
 import { PdfExportButton } from './components/PdfExportButton'
+import { DollarSign, Percent, Calendar, Wrench, Shield } from 'lucide-react'
 
 const defaultInputs: CalculatorInputs = {
   purchasePrice: 300000,
@@ -21,17 +22,41 @@ const defaultInputs: CalculatorInputs = {
   rehabBudget: 0,
 }
 
+// Icon mapping for input fields
+const inputIcons: Record<keyof CalculatorInputs, React.ComponentType<{ className?: string }>> = {
+  purchasePrice: DollarSign,
+  downPaymentPercent: Percent,
+  interestRateAnnualPercent: Percent,
+  loanTermYears: Calendar,
+  monthlyRent: DollarSign,
+  vacancyPercent: Percent,
+  maintenancePercent: Wrench,
+  managementPercent: Percent,
+  taxesMonthly: DollarSign,
+  insuranceMonthly: Shield,
+  otherFixedMonthly: DollarSign,
+  closingCosts: DollarSign,
+  rehabBudget: Wrench,
+};
+
 function Input({ label, name, value, onChange, step = 1 }: { label: string; name: keyof CalculatorInputs; value: number; onChange: (name: keyof CalculatorInputs, value: number) => void; step?: number }) {
+  const IconComponent = inputIcons[name];
+
   return (
     <label className="flex flex-col gap-1 text-sm">
       <span className="font-medium text-gray-700">{label}</span>
-      <input
-        type="number"
-        step={step}
-        className="rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-        value={Number.isFinite(value) ? value : 0}
-        onChange={(e) => onChange(name, parseFloat(e.target.value))}
-      />
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <IconComponent className="h-4 w-4 text-gray-400" aria-hidden="true" />
+      </div>
+        <input
+          type="number"
+          step={step}
+          className="rounded-md border border-gray-300 bg-white pl-10 pr-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          value={Number.isFinite(value) ? value : 0}
+          onChange={(e) => onChange(name, parseFloat(e.target.value))}
+        />
+      </div>
     </label>
   )
 }
