@@ -28,7 +28,7 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
       // Add exporting mode to reduce surprises
       root.classList.add('exporting');
 
-      // Robust style normalizer
+      // Enhanced style normalizer to convert oklch to computed RGB
       const normalizeStyles = (element: Element): number => {
         let normalizedCount = 0;
         
@@ -37,34 +37,67 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
           const cs = getComputedStyle(element);
           const el = element as HTMLElement;
           
-          // Check for problematic color functions
-          const problematicProps = [
-            'color', 'backgroundColor', 'borderColor', 'outlineColor', 'caretColor', 'fill', 'stroke'
+          // Check for problematic color functions and convert to computed RGB
+          const colorProps = [
+            'color', 'backgroundColor', 'borderColor', 'outlineColor', 'caretColor', 
+            'fill', 'stroke', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor'
           ];
           
-          for (const prop of problematicProps) {
+          for (const prop of colorProps) {
             const value = cs.getPropertyValue(prop);
-            if (value && (value.includes('oklch') || value.includes('oklab') || value.includes('color(') || value.includes('display-p3') || value.includes('var('))) {
-              el.style.setProperty(prop, value, 'important');
-              normalizedCount++;
+            if (value && value !== 'rgba(0, 0, 0, 0)' && value !== 'transparent') {
+              // Check if it contains problematic color functions
+              if (value.includes('oklch') || value.includes('oklab') || value.includes('color(') || value.includes('display-p3') || value.includes('var(')) {
+                // Force recomputation by temporarily setting and getting computed value
+                const originalValue = el.style.getPropertyValue(prop);
+                el.style.setProperty(prop, value, 'important');
+                
+                // Get the computed RGB value
+                const computedValue = getComputedStyle(el).getPropertyValue(prop);
+                if (computedValue && !computedValue.includes('oklch') && !computedValue.includes('oklab')) {
+                  el.style.setProperty(prop, computedValue, 'important');
+                  normalizedCount++;
+                } else {
+                  // Fallback to original value if conversion fails
+                  el.style.setProperty(prop, originalValue, 'important');
+                }
+              }
             }
           }
           
           // Remove gradients/shadows during export
           el.style.boxShadow = 'none';
           el.style.filter = 'none';
+          el.style.textShadow = 'none';
           
-          // Handle SVG elements
+          // Handle SVG elements more aggressively
           if (element instanceof SVGElement) {
+            const svgEl = element as SVGElement;
             const fill = cs.fill;
             const stroke = cs.stroke;
-            if (fill && (fill.includes('ok') || fill.includes('var('))) {
-              element.setAttribute('fill', fill);
-              normalizedCount++;
+            
+            if (fill && fill !== 'none' && fill !== 'currentColor') {
+              if (fill.includes('oklch') || fill.includes('oklab') || fill.includes('var(')) {
+                // Force SVG fill to computed RGB
+                svgEl.style.fill = fill;
+                const computedFill = getComputedStyle(svgEl).fill;
+                if (computedFill && !computedFill.includes('oklch')) {
+                  svgEl.setAttribute('fill', computedFill);
+                  normalizedCount++;
+                }
+              }
             }
-            if (stroke && (stroke.includes('ok') || stroke.includes('var('))) {
-              element.setAttribute('stroke', stroke);
-              normalizedCount++;
+            
+            if (stroke && stroke !== 'none' && stroke !== 'currentColor') {
+              if (stroke.includes('oklch') || stroke.includes('oklab') || stroke.includes('var(')) {
+                // Force SVG stroke to computed RGB
+                svgEl.style.stroke = stroke;
+                const computedStroke = getComputedStyle(svgEl).stroke;
+                if (computedStroke && !computedStroke.includes('oklch')) {
+                  svgEl.setAttribute('stroke', computedStroke);
+                  normalizedCount++;
+                }
+              }
             }
           }
         }
