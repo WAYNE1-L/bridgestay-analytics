@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { calculateAll, type CalculatorInputs } from './utils/calculations'
 import { formatCurrency, formatPercent } from './lib/format'
 import type { CalculatorResults } from './types/results'
+import { AmortizationChart } from './components/AmortizationChart'
 
 const defaultInputs: CalculatorInputs = {
   purchasePrice: 300000,
@@ -134,6 +135,8 @@ export default function App() {
               </tbody>
             </table>
           </div>
+
+          <AmortizationChart items={results.amortization} monthlyRent={inputs.monthlyRent} />
         </section>
       </main>
       <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-gray-500">
