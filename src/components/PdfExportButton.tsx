@@ -22,31 +22,53 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
         throw new Error('Report element not found');
       }
 
-      // Capture the element with high quality
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
+      // Ensure fonts are loaded before capture
+      await document.fonts.ready;
+
+      // Set crossOrigin for all images to avoid CORS issues
+      const images = element.querySelectorAll('img');
+      images.forEach((img: HTMLImageElement) => {
+        img.crossOrigin = 'anonymous';
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      // Wait a bit for images to load with new crossOrigin
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('Starting PDF capture...');
+
+      // Capture with improved options
+      const canvas = await html2canvas(element, {
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        scale: 2,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        logging: false,
+        removeContainer: true,
+        foreignObjectRendering: true,
+      });
+
+      console.log('Canvas captured successfully:', canvas.width, 'x', canvas.height);
+
+      const imgData = canvas.toDataURL('image/png', 0.95);
       const pdf = new jsPDF('p', 'mm', 'a4');
       
       const imgWidth = 210; // A4 width in mm
       const pageHeight = 295; // A4 height in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
+      
+      console.log('Image dimensions:', imgWidth, 'x', imgHeight, 'mm');
+      console.log('Pages needed:', Math.ceil(imgHeight / pageHeight));
 
       // Add first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      
       // Add additional pages if content exceeds one page
-      while (heightLeft >= 0) {
+      let heightLeft = imgHeight;
+      let position = 0;
+      
+      while (heightLeft >= pageHeight) {
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
@@ -58,11 +80,24 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
       const dateString = today.toISOString().slice(0, 10).replace(/-/g, '');
       const filename = `bridge-stay-roi-${dateString}.pdf`;
 
+      console.log('Saving PDF:', filename);
+      
       // Save the PDF
       pdf.save(filename);
+      
+      console.log('PDF export completed successfully');
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      console.error('PDF Export Error Details:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      
+      let errorMessage = 'Failed to generate PDF. ';
+      if (error instanceof Error) {
+        errorMessage += `Error: ${error.message}`;
+      } else {
+        errorMessage += 'Unknown error occurred.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsExporting(false);
     }
