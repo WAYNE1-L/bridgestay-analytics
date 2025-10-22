@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { calculateAll, type CalculatorInputs } from './utils/calculations'
+import { formatCurrency, formatPercent } from './lib/format'
+import type { CalculatorResults } from './types/results'
 
 const defaultInputs: CalculatorInputs = {
   purchasePrice: 300000,
@@ -32,16 +34,26 @@ function Input({ label, name, value, onChange, step = 1 }: { label: string; name
   )
 }
 
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(Number.isFinite(n) ? n : 0)
-}
-function formatPercent(p: number): string {
-  return `${(Number.isFinite(p) ? p : 0).toFixed(1)}%`
-}
 
 export default function App() {
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs)
-  const results = useMemo(() => calculateAll(inputs), [inputs])
+  const rawResults = useMemo(() => calculateAll(inputs), [inputs])
+  
+  // Transform to typed results structure
+  const results: CalculatorResults = useMemo(() => ({
+    summary: {
+      loanAmount: rawResults.loanAmount,
+      monthlyMortgage: rawResults.monthlyMortgage,
+      noiMonthly: rawResults.noiMonthly,
+      noiAnnual: rawResults.noiAnnual,
+      cashFlowMonthly: rawResults.cashFlowMonthly,
+      cashOnCashReturnPercent: rawResults.cashOnCashReturnPercent,
+      capRatePercent: rawResults.capRatePercent,
+      annualizedFiveYearReturnPercent: rawResults.annualizedFiveYearReturnPercent,
+    },
+    expenseBreakdown: rawResults.expenseBreakdownMonthly,
+    amortization: rawResults.amortization,
+  }), [rawResults])
 
   function handleChange(name: keyof CalculatorInputs, value: number) {
     setInputs((prev) => ({ ...prev, [name]: Number.isFinite(value) ? value : 0 }))
@@ -83,20 +95,20 @@ export default function App() {
         <section className="rounded-lg border bg-white p-4 shadow-sm">
           <h2 className="mb-3 text-base font-semibold text-gray-900">Results</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Stat label="Monthly cash flow" value={formatCurrency(results.cashFlowMonthly)} positive={results.cashFlowMonthly >= 0} />
-            <Stat label="Mortgage payment" value={formatCurrency(results.monthlyMortgage)} />
-            <Stat label="NOI (monthly)" value={formatCurrency(results.noiMonthly)} />
-            <Stat label="NOI (annual)" value={formatCurrency(results.noiAnnual)} />
-            <Stat label="Cash on cash" value={formatPercent(results.cashOnCashReturnPercent)} />
-            <Stat label="Cap rate" value={formatPercent(results.capRatePercent)} />
-            <Stat label="5yr annualized" value={formatPercent(results.annualizedFiveYearReturnPercent)} />
+            <Stat label="Monthly cash flow" value={formatCurrency(results.summary.cashFlowMonthly)} positive={results.summary.cashFlowMonthly >= 0} />
+            <Stat label="Mortgage payment" value={formatCurrency(results.summary.monthlyMortgage)} />
+            <Stat label="NOI (monthly)" value={formatCurrency(results.summary.noiMonthly)} />
+            <Stat label="NOI (annual)" value={formatCurrency(results.summary.noiAnnual)} />
+            <Stat label="Cash on cash" value={formatPercent(results.summary.cashOnCashReturnPercent)} />
+            <Stat label="Cap rate" value={formatPercent(results.summary.capRatePercent)} />
+            <Stat label="5yr annualized" value={formatPercent(results.summary.annualizedFiveYearReturnPercent)} />
           </div>
 
           <h3 className="mt-4 text-sm font-semibold text-gray-900">Monthly expenses</h3>
           <ul className="mt-2 divide-y rounded-md border">
-            <Row label="Fixed" value={formatCurrency(results.expenseBreakdownMonthly.fixed)} />
-            <Row label="Variable" value={formatCurrency(results.expenseBreakdownMonthly.variable)} />
-            <Row label="Total" value={formatCurrency(results.expenseBreakdownMonthly.total)} />
+            <Row label="Fixed" value={formatCurrency(results.expenseBreakdown.fixed)} />
+            <Row label="Variable" value={formatCurrency(results.expenseBreakdown.variable)} />
+            <Row label="Total" value={formatCurrency(results.expenseBreakdown.total)} />
           </ul>
 
           <h3 className="mt-4 text-sm font-semibold text-gray-900">Amortization (first 12 months)</h3>

@@ -4,11 +4,11 @@ A rental property calculator built with React, TypeScript, Vite, and Tailwind CS
 
 ## Features
 
-### ✅ Step 1 - Branding & Favicon
-- [x] BridgeStay logo in header
-- [x] Custom favicon
-- [x] Updated page title
-- [x] Mobile-responsive header layout
+### ✅ Step 2 - Types & Formatters
+- [x] Extracted result types to `src/types/results.ts`
+- [x] Created formatter utilities in `src/lib/format.ts`
+- [x] Updated App.tsx to use typed results structure
+- [x] No changes to calculations.ts API
 
 ## How to Run
 
