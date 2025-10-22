@@ -3,6 +3,7 @@ import { calculateAll, type CalculatorInputs } from './utils/calculations'
 import { formatCurrency, formatPercent } from './lib/format'
 import type { CalculatorResults } from './types/results'
 import { AmortizationChart } from './components/AmortizationChart'
+import { PdfExportButton } from './components/PdfExportButton'
 
 const defaultInputs: CalculatorInputs = {
   purchasePrice: 300000,
@@ -93,8 +94,11 @@ export default function App() {
           </div>
         </section>
 
-        <section className="rounded-lg border bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-base font-semibold text-gray-900">Results</h2>
+        <section id="report-root" className="rounded-lg border bg-white p-4 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-gray-900">Results</h2>
+            <PdfExportButton />
+          </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Stat label="Monthly cash flow" value={formatCurrency(results.summary.cashFlowMonthly)} positive={results.summary.cashFlowMonthly >= 0} />
             <Stat label="Mortgage payment" value={formatCurrency(results.summary.monthlyMortgage)} />

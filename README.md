@@ -4,12 +4,13 @@ A rental property calculator built with React, TypeScript, Vite, and Tailwind CS
 
 ## Features
 
-### ✅ Step 3 - Charts
-- [x] Installed Recharts library
-- [x] Created AmortizationChart component with LineChart
-- [x] Added responsive chart showing principal, interest, and cash flow
-- [x] Chart displays first 12 months of data
-- [x] Custom tooltip with currency formatting
+### ✅ Step 4 - PDF Export
+- [x] Installed jsPDF and html2canvas libraries
+- [x] Created PdfExportButton component with dynamic imports
+- [x] Added report-root ID wrapper for PDF capture
+- [x] PDF includes header logo, chart, and KPI table
+- [x] Multi-page PDF support with pagination
+- [x] Filename includes current date (YYYYMMDD format)
 
 ## How to Run
 
