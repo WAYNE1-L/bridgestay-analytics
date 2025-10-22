@@ -3,3 +3,14 @@
 html, body, #root {
   height: 100%;
 }
+
+/* export-safe fallback palette purely in rgb() */
+.exporting { 
+  background: rgb(255, 255, 255) !important; 
+}
+
+.exporting * {
+  --tw-shadow: 0 0 rgb(0, 0, 0, 0) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
