@@ -12,79 +12,114 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
     
     try {
       // Dynamic imports to avoid bloating initial bundle
-      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import('html2canvas'),
         import('jspdf'),
-        import('html2canvas')
+        document.fonts.ready
       ]);
 
-      const element = document.getElementById('report-root');
-      if (!element) {
+      const root = document.getElementById('report-root');
+      if (!root) {
         throw new Error('Report element not found');
       }
 
-      // Ensure fonts are loaded before capture
-      await document.fonts.ready;
+      console.log('Starting PDF generation...');
 
-      // Set crossOrigin for all images to avoid CORS issues
-      const images = element.querySelectorAll('img');
+      // Normalize colors to avoid oklch/oklab issues
+      const normalizeColors = (element: Element) => {
+        const computedStyle = getComputedStyle(element);
+        const color = computedStyle.color;
+        const backgroundColor = computedStyle.backgroundColor;
+
+        // Check if color contains unsupported functions
+        if (color && (color.includes('oklch') || color.includes('oklab') || color.startsWith('var('))) {
+          (element as HTMLElement).style.color = color;
+        }
+
+        // Check if backgroundColor contains unsupported functions
+        if (backgroundColor && (backgroundColor.includes('oklch') || backgroundColor.includes('oklab') || backgroundColor.startsWith('var('))) {
+          (element as HTMLElement).style.backgroundColor = backgroundColor;
+        }
+
+        // Recursively process children
+        Array.from(element.children).forEach(normalizeColors);
+      };
+
+      normalizeColors(root);
+
+      // Set crossOrigin for all images
+      const images = root.querySelectorAll('img');
       images.forEach((img: HTMLImageElement) => {
         img.crossOrigin = 'anonymous';
       });
 
-      // Set background to white for better PDF rendering
-      const originalBackground = element.style.backgroundColor;
-      element.style.backgroundColor = '#ffffff';
+      // Wait for fonts and animation frame
+      await new Promise(resolve => requestAnimationFrame(resolve));
 
-      // Wait a bit for images to load with new crossOrigin
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      console.log('Starting PDF generation with jsPDF.html...');
-
-      // Create PDF with proper sizing
-      const pdf = new jsPDF('p', 'pt', 'a4');
-      
-      // Use jsPDF.html() for better pagination and text handling
-      await pdf.html(element, {
-        callback: (doc) => {
-          console.log('PDF generation completed');
-          
-          // Generate filename with current date
-          const today = new Date();
-          const dateString = today.toISOString().slice(0, 10).replace(/-/g, '');
-          const filename = `bridge-stay-roi-${dateString}.pdf`;
-          
-          console.log('Saving PDF:', filename);
-          doc.save(filename);
-          console.log('PDF export completed successfully');
-        },
-        margin: [24, 24, 24, 24], // 24pt margins on all sides
-        autoPaging: 'text',
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          windowWidth: element.scrollWidth,
-          windowHeight: element.scrollHeight,
-          logging: false,
-        },
-        x: 0,
-        y: 0,
-        width: 595.28, // A4 width in points
-        windowWidth: element.scrollWidth,
+      // Capture with html2canvas
+      const canvas = await html2canvas(root, {
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#fff',
+        scale: 2,
+        windowWidth: root.scrollWidth,
+        windowHeight: root.scrollHeight,
+        logging: false,
       });
 
-    } catch (error) {
-      console.error('PDF Export Error Details:', error);
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-      
-      let errorMessage = 'Failed to generate PDF. ';
-      if (error instanceof Error) {
-        errorMessage += `Error: ${error.message}`;
-      } else {
-        errorMessage += 'Unknown error occurred.';
+      console.log('Canvas captured:', canvas.width, 'x', canvas.height);
+
+      // Create PDF and slice into A4 pages
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgW = pageW;
+      const imgH = canvas.height * (imgW / canvas.width);
+
+      console.log('PDF dimensions:', pageW, 'x', pageH, 'pt');
+      console.log('Image dimensions:', imgW, 'x', imgH, 'pt');
+
+      let isFirstPage = true;
+
+      // Slice canvas into pages
+      for (let y = 0; y < imgH; y += pageH) {
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+
+        // Calculate source coordinates
+        const sy = Math.floor((y / imgH) * canvas.height);
+        const sH = Math.min(Math.floor((pageH / imgH) * canvas.height), canvas.height - sy);
+        const targetH = Math.min(pageH, imgH - y);
+
+        // Create temporary canvas for this slice
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        if (!tempCtx) throw new Error('Failed to get canvas context');
+
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = sH;
+        tempCtx.drawImage(canvas, 0, sy, canvas.width, sH, 0, 0, canvas.width, sH);
+
+        // Convert to data URL and add to PDF
+        const imgData = tempCanvas.toDataURL('image/png', 0.95);
+        pdf.addImage(imgData, 'PNG', 0, 0, imgW, targetH);
+
+        isFirstPage = false;
       }
-      
-      alert(errorMessage);
+
+      // Generate filename with current date
+      const today = new Date();
+      const dateString = today.toISOString().slice(0, 10).replace(/-/g, '');
+      const filename = `bridge-stay-roi-${dateString}.pdf`;
+
+      console.log('Saving PDF:', filename);
+      pdf.save(filename);
+      console.log('PDF export completed successfully');
+
+    } catch (error) {
+      console.error('PDF Export Error:', error);
+      alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsExporting(false);
     }
