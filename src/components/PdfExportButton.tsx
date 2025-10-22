@@ -31,61 +31,48 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
         img.crossOrigin = 'anonymous';
       });
 
+      // Set background to white for better PDF rendering
+      const originalBackground = element.style.backgroundColor;
+      element.style.backgroundColor = '#ffffff';
+
       // Wait a bit for images to load with new crossOrigin
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      console.log('Starting PDF capture...');
+      console.log('Starting PDF generation with jsPDF.html...');
 
-      // Capture with improved options
-      const canvas = await html2canvas(element, {
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        scale: 2,
+      // Create PDF with proper sizing
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      
+      // Use jsPDF.html() for better pagination and text handling
+      await pdf.html(element, {
+        callback: (doc) => {
+          console.log('PDF generation completed');
+          
+          // Generate filename with current date
+          const today = new Date();
+          const dateString = today.toISOString().slice(0, 10).replace(/-/g, '');
+          const filename = `bridge-stay-roi-${dateString}.pdf`;
+          
+          console.log('Saving PDF:', filename);
+          doc.save(filename);
+          console.log('PDF export completed successfully');
+        },
+        margin: [24, 24, 24, 24], // 24pt margins on all sides
+        autoPaging: 'text',
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          windowWidth: element.scrollWidth,
+          windowHeight: element.scrollHeight,
+          logging: false,
+        },
+        x: 0,
+        y: 0,
+        width: 595.28, // A4 width in points
         windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        logging: false,
-        removeContainer: true,
-        foreignObjectRendering: true,
       });
 
-      console.log('Canvas captured successfully:', canvas.width, 'x', canvas.height);
-
-      const imgData = canvas.toDataURL('image/png', 0.95);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 295; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      console.log('Image dimensions:', imgWidth, 'x', imgHeight, 'mm');
-      console.log('Pages needed:', Math.ceil(imgHeight / pageHeight));
-
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-      // Add additional pages if content exceeds one page
-      let heightLeft = imgHeight;
-      let position = 0;
-      
-      while (heightLeft >= pageHeight) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      // Generate filename with current date
-      const today = new Date();
-      const dateString = today.toISOString().slice(0, 10).replace(/-/g, '');
-      const filename = `bridge-stay-roi-${dateString}.pdf`;
-
-      console.log('Saving PDF:', filename);
-      
-      // Save the PDF
-      pdf.save(filename);
-      
-      console.log('PDF export completed successfully');
     } catch (error) {
       console.error('PDF Export Error Details:', error);
       console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
