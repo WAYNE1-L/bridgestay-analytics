@@ -28,21 +28,69 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
       // Add exporting mode to reduce surprises
       root.classList.add('exporting');
 
-      // Efficient color normalizer using querySelectorAll
+      // Aggressive color normalizer - force all colors to RGB
       const normalizeColors = (root: HTMLElement) => {
         const all = root.querySelectorAll('*');
         let fixed = 0;
+        
         all.forEach(el => {
           const cs = getComputedStyle(el);
-          for (const prop of ['color','backgroundColor','borderColor','fill','stroke']) {
-            const v = cs[prop as keyof CSSStyleDeclaration];
-            if (v && /oklch|oklab|display-p3|var\(/i.test(v)) {
-              (el as HTMLElement).style[prop] = cs.color;
-              fixed++;
+          const htmlEl = el as HTMLElement;
+          
+          // Force all color properties to computed RGB values
+          const colorProps = [
+            'color', 'backgroundColor', 'borderColor', 'borderTopColor', 
+            'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+            'outlineColor', 'caretColor', 'fill', 'stroke'
+          ];
+          
+          colorProps.forEach(prop => {
+            const value = cs[prop as keyof CSSStyleDeclaration];
+            if (value && value !== 'rgba(0, 0, 0, 0)' && value !== 'transparent' && value !== 'none') {
+              // Force browser to compute RGB value
+              htmlEl.style.setProperty(prop, value, 'important');
+              const computedValue = getComputedStyle(htmlEl)[prop as keyof CSSStyleDeclaration];
+              
+              // Only use if it's a valid RGB/RGBA value
+              if (computedValue && /^rgba?\(/.test(computedValue)) {
+                htmlEl.style.setProperty(prop, computedValue, 'important');
+                fixed++;
+              }
+            }
+          });
+          
+          // Handle SVG elements specifically
+          if (el instanceof SVGElement) {
+            const svgEl = el as SVGElement;
+            const fill = cs.fill;
+            const stroke = cs.stroke;
+            
+            if (fill && fill !== 'none' && fill !== 'currentColor') {
+              svgEl.style.fill = fill;
+              const computedFill = getComputedStyle(svgEl).fill;
+              if (computedFill && /^rgba?\(/.test(computedFill)) {
+                svgEl.setAttribute('fill', computedFill);
+                fixed++;
+              }
+            }
+            
+            if (stroke && stroke !== 'none' && stroke !== 'currentColor') {
+              svgEl.style.stroke = stroke;
+              const computedStroke = getComputedStyle(svgEl).stroke;
+              if (computedStroke && /^rgba?\(/.test(computedStroke)) {
+                svgEl.setAttribute('stroke', computedStroke);
+                fixed++;
+              }
             }
           }
+          
+          // Remove any problematic effects
+          htmlEl.style.boxShadow = 'none';
+          htmlEl.style.filter = 'none';
+          htmlEl.style.textShadow = 'none';
         });
-        console.log(`Normalized ${fixed} color values`);
+        
+        console.log(`Normalized ${fixed} color values to RGB`);
       };
 
       normalizeColors(root);

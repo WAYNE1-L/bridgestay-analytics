@@ -4,63 +4,63 @@ html, body, #root {
   height: 100%;
 }
 
-/* Override Tailwind v4 oklch colors with hsl equivalents for PDF export compatibility */
+/* Override Tailwind v4 oklch colors with rgb equivalents for PDF export compatibility */
 :root {
-  /* Convert common Tailwind colors from oklch to hsl */
-  --tw-blue-50: hsl(214, 100%, 97%);
-  --tw-blue-100: hsl(214, 95%, 93%);
-  --tw-blue-200: hsl(213, 97%, 87%);
-  --tw-blue-300: hsl(212, 96%, 78%);
-  --tw-blue-400: hsl(213, 94%, 68%);
-  --tw-blue-500: hsl(217, 91%, 60%);
-  --tw-blue-600: hsl(221, 83%, 53%);
-  --tw-blue-700: hsl(224, 76%, 48%);
-  --tw-blue-800: hsl(226, 71%, 40%);
-  --tw-blue-900: hsl(224, 64%, 33%);
+  /* Force all Tailwind colors to RGB values */
+  --tw-blue-50: rgb(239, 246, 255);
+  --tw-blue-100: rgb(219, 234, 254);
+  --tw-blue-200: rgb(191, 219, 254);
+  --tw-blue-300: rgb(147, 197, 253);
+  --tw-blue-400: rgb(96, 165, 250);
+  --tw-blue-500: rgb(59, 130, 246);
+  --tw-blue-600: rgb(37, 99, 235);
+  --tw-blue-700: rgb(29, 78, 216);
+  --tw-blue-800: rgb(30, 64, 175);
+  --tw-blue-900: rgb(30, 58, 138);
   
-  --tw-gray-50: hsl(210, 20%, 98%);
-  --tw-gray-100: hsl(210, 20%, 95%);
-  --tw-gray-200: hsl(214, 32%, 91%);
-  --tw-gray-300: hsl(213, 27%, 84%);
-  --tw-gray-400: hsl(215, 20%, 65%);
-  --tw-gray-500: hsl(215, 16%, 47%);
-  --tw-gray-600: hsl(215, 19%, 35%);
-  --tw-gray-700: hsl(215, 25%, 27%);
-  --tw-gray-800: hsl(217, 33%, 17%);
-  --tw-gray-900: hsl(222, 84%, 5%);
+  --tw-gray-50: rgb(249, 250, 251);
+  --tw-gray-100: rgb(243, 244, 246);
+  --tw-gray-200: rgb(229, 231, 235);
+  --tw-gray-300: rgb(209, 213, 219);
+  --tw-gray-400: rgb(156, 163, 175);
+  --tw-gray-500: rgb(107, 114, 128);
+  --tw-gray-600: rgb(75, 85, 99);
+  --tw-gray-700: rgb(55, 65, 81);
+  --tw-gray-800: rgb(31, 41, 55);
+  --tw-gray-900: rgb(17, 24, 39);
   
-  --tw-emerald-50: hsl(152, 76%, 97%);
-  --tw-emerald-100: hsl(149, 80%, 90%);
-  --tw-emerald-200: hsl(152, 76%, 80%);
-  --tw-emerald-300: hsl(156, 72%, 67%);
-  --tw-emerald-400: hsl(158, 64%, 52%);
-  --tw-emerald-500: hsl(160, 84%, 39%);
-  --tw-emerald-600: hsl(161, 94%, 30%);
-  --tw-emerald-700: hsl(163, 94%, 24%);
-  --tw-emerald-800: hsl(163, 88%, 20%);
-  --tw-emerald-900: hsl(164, 86%, 16%);
+  --tw-emerald-50: rgb(236, 253, 245);
+  --tw-emerald-100: rgb(209, 250, 229);
+  --tw-emerald-200: rgb(167, 243, 208);
+  --tw-emerald-300: rgb(110, 231, 183);
+  --tw-emerald-400: rgb(52, 211, 153);
+  --tw-emerald-500: rgb(16, 185, 129);
+  --tw-emerald-600: rgb(5, 150, 105);
+  --tw-emerald-700: rgb(4, 120, 87);
+  --tw-emerald-800: rgb(6, 95, 70);
+  --tw-emerald-900: rgb(6, 78, 59);
   
-  --tw-red-50: hsl(0, 86%, 97%);
-  --tw-red-100: hsl(0, 93%, 94%);
-  --tw-red-200: hsl(0, 96%, 89%);
-  --tw-red-300: hsl(0, 94%, 82%);
-  --tw-red-400: hsl(0, 91%, 71%);
-  --tw-red-500: hsl(0, 84%, 60%);
-  --tw-red-600: hsl(0, 72%, 51%);
-  --tw-red-700: hsl(0, 74%, 42%);
-  --tw-red-800: hsl(0, 70%, 35%);
-  --tw-red-900: hsl(0, 63%, 31%);
+  --tw-red-50: rgb(254, 242, 242);
+  --tw-red-100: rgb(254, 226, 226);
+  --tw-red-200: rgb(254, 202, 202);
+  --tw-red-300: rgb(252, 165, 165);
+  --tw-red-400: rgb(248, 113, 113);
+  --tw-red-500: rgb(239, 68, 68);
+  --tw-red-600: rgb(220, 38, 38);
+  --tw-red-700: rgb(185, 28, 28);
+  --tw-red-800: rgb(153, 27, 27);
+  --tw-red-900: rgb(127, 29, 29);
   
-  --tw-amber-50: hsl(48, 100%, 96%);
-  --tw-amber-100: hsl(48, 96%, 89%);
-  --tw-amber-200: hsl(48, 96%, 77%);
-  --tw-amber-300: hsl(46, 95%, 61%);
-  --tw-amber-400: hsl(43, 96%, 56%);
-  --tw-amber-500: hsl(38, 92%, 50%);
-  --tw-amber-600: hsl(32, 95%, 44%);
-  --tw-amber-700: hsl(26, 90%, 37%);
-  --tw-amber-800: hsl(23, 83%, 31%);
-  --tw-amber-900: hsl(22, 78%, 26%);
+  --tw-amber-50: rgb(255, 251, 235);
+  --tw-amber-100: rgb(254, 243, 199);
+  --tw-amber-200: rgb(253, 230, 138);
+  --tw-amber-300: rgb(252, 211, 77);
+  --tw-amber-400: rgb(251, 191, 36);
+  --tw-amber-500: rgb(245, 158, 11);
+  --tw-amber-600: rgb(217, 119, 6);
+  --tw-amber-700: rgb(180, 83, 9);
+  --tw-amber-800: rgb(146, 64, 14);
+  --tw-amber-900: rgb(120, 53, 15);
 }
 
 /* export-safe fallback palette purely in rgb() */
