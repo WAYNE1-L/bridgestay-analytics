@@ -28,16 +28,16 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
       // Add exporting mode to reduce surprises
       root.classList.add('exporting');
 
-      // Aggressive color normalizer - force all colors to RGB
+      // Comprehensive style sanitizer to eliminate unsupported color functions
       const normalizeColors = (root: HTMLElement) => {
         const all = root.querySelectorAll('*');
-        let fixed = 0;
+        let normalized = 0;
         
         all.forEach(el => {
           const cs = getComputedStyle(el);
           const htmlEl = el as HTMLElement;
           
-          // Force all color properties to computed RGB values
+          // Color properties to sanitize
           const colorProps = [
             'color', 'backgroundColor', 'borderColor', 'borderTopColor', 
             'borderRightColor', 'borderBottomColor', 'borderLeftColor',
@@ -47,14 +47,17 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
           colorProps.forEach(prop => {
             const value = cs[prop as keyof CSSStyleDeclaration];
             if (value && value !== 'rgba(0, 0, 0, 0)' && value !== 'transparent' && value !== 'none') {
-              // Force browser to compute RGB value
-              htmlEl.style.setProperty(prop, value, 'important');
-              const computedValue = getComputedStyle(htmlEl)[prop as keyof CSSStyleDeclaration];
-              
-              // Only use if it's a valid RGB/RGBA value
-              if (computedValue && /^rgba?\(/.test(computedValue)) {
-                htmlEl.style.setProperty(prop, computedValue, 'important');
-                fixed++;
+              // Check if value contains unsupported color functions
+              if (value.includes('oklch') || value.includes('oklab') || value.includes('var(') || value.includes('display-p3')) {
+                // Force browser to compute RGB value
+                htmlEl.style.setProperty(prop, value, 'important');
+                const computedValue = getComputedStyle(htmlEl)[prop as keyof CSSStyleDeclaration];
+                
+                // Only use if it's a valid RGB/RGBA value
+                if (computedValue && /^rgba?\(/.test(computedValue)) {
+                  htmlEl.style.setProperty(prop, computedValue, 'important');
+                  normalized++;
+                }
               }
             }
           });
@@ -66,31 +69,50 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
             const stroke = cs.stroke;
             
             if (fill && fill !== 'none' && fill !== 'currentColor') {
-              svgEl.style.fill = fill;
-              const computedFill = getComputedStyle(svgEl).fill;
-              if (computedFill && /^rgba?\(/.test(computedFill)) {
-                svgEl.setAttribute('fill', computedFill);
-                fixed++;
+              if (fill.includes('oklch') || fill.includes('oklab') || fill.includes('var(')) {
+                svgEl.style.fill = fill;
+                const computedFill = getComputedStyle(svgEl).fill;
+                if (computedFill && /^rgba?\(/.test(computedFill)) {
+                  svgEl.setAttribute('fill', computedFill);
+                  normalized++;
+                }
               }
             }
             
             if (stroke && stroke !== 'none' && stroke !== 'currentColor') {
-              svgEl.style.stroke = stroke;
-              const computedStroke = getComputedStyle(svgEl).stroke;
-              if (computedStroke && /^rgba?\(/.test(computedStroke)) {
-                svgEl.setAttribute('stroke', computedStroke);
-                fixed++;
+              if (stroke.includes('oklch') || stroke.includes('oklab') || stroke.includes('var(')) {
+                svgEl.style.stroke = stroke;
+                const computedStroke = getComputedStyle(svgEl).stroke;
+                if (computedStroke && /^rgba?\(/.test(computedStroke)) {
+                  svgEl.setAttribute('stroke', computedStroke);
+                  normalized++;
+                }
               }
             }
           }
           
-          // Remove any problematic effects
-          htmlEl.style.boxShadow = 'none';
-          htmlEl.style.filter = 'none';
-          htmlEl.style.textShadow = 'none';
+          // Remove problematic effects that might contain unsupported colors
+          const boxShadow = cs.boxShadow;
+          const filter = cs.filter;
+          const textShadow = cs.textShadow;
+          
+          if (boxShadow && (boxShadow.includes('oklch') || boxShadow.includes('var('))) {
+            htmlEl.style.boxShadow = 'none';
+            normalized++;
+          }
+          
+          if (filter && (filter.includes('oklch') || filter.includes('var('))) {
+            htmlEl.style.filter = 'none';
+            normalized++;
+          }
+          
+          if (textShadow && (textShadow.includes('oklch') || textShadow.includes('var('))) {
+            htmlEl.style.textShadow = 'none';
+            normalized++;
+          }
         });
         
-        console.log(`Normalized ${fixed} color values to RGB`);
+        console.log(`Normalized ${normalized} elements`);
       };
 
       normalizeColors(root);

@@ -72,4 +72,26 @@ html, body, #root {
   --tw-shadow: 0 0 rgb(0, 0, 0, 0) !important;
   box-shadow: none !important;
   filter: none !important;
+  text-shadow: none !important;
 }
+
+/* Force all colors to RGB during export */
+.exporting * {
+  color: rgb(17, 24, 39) !important;
+  background-color: rgb(255, 255, 255) !important;
+  border-color: rgb(209, 213, 219) !important;
+}
+
+.exporting .text-gray-900 { color: rgb(17, 24, 39) !important; }
+.exporting .text-gray-700 { color: rgb(55, 65, 81) !important; }
+.exporting .text-gray-600 { color: rgb(75, 85, 99) !important; }
+.exporting .text-blue-600 { color: rgb(37, 99, 235) !important; }
+.exporting .text-emerald-600 { color: rgb(5, 150, 105) !important; }
+.exporting .text-red-600 { color: rgb(220, 38, 38) !important; }
+
+.exporting .bg-white { background-color: rgb(255, 255, 255) !important; }
+.exporting .bg-gray-50 { background-color: rgb(249, 250, 251) !important; }
+.exporting .bg-blue-600 { background-color: rgb(37, 99, 235) !important; }
+
+.exporting .border-gray-300 { border-color: rgb(209, 213, 219) !important; }
+.exporting .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
