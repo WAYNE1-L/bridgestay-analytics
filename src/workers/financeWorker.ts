@@ -23,7 +23,7 @@ self.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
 
   try {
     switch (type) {
-      case 'CALCULATE_ROI':
+      case 'CALCULATE_ROI': {
         const singleResult = calculateRoiResults(payload as RoiInputs)
         self.postMessage({
           type: 'ROI_RESULT',
@@ -31,8 +31,9 @@ self.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
           id
         } as WorkerResponse)
         break
+      }
 
-      case 'CALCULATE_BATCH':
+      case 'CALCULATE_BATCH': {
         const batchInputs = payload as RoiInputs[]
         const batchResults = batchInputs.map(inputs => calculateRoiResults(inputs))
         self.postMessage({
@@ -41,6 +42,7 @@ self.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
           id
         } as WorkerResponse)
         break
+      }
 
       default:
         throw new Error(`Unknown message type: ${type}`)

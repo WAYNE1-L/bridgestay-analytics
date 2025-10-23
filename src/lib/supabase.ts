@@ -25,12 +25,12 @@ export interface PropertySnapshot {
   user_id: string
   property_address: string
   property_data: {
-    zillow_data?: any
-    census_data?: any
-    market_data?: any
+    zillow_data?: Record<string, unknown>
+    census_data?: Record<string, unknown>
+    market_data?: Record<string, unknown>
   }
-  calculation_inputs: any
-  calculation_results: any
+  calculation_inputs: Record<string, unknown>
+  calculation_results: Record<string, unknown>
   created_at: string
   updated_at: string
 }

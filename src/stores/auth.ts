@@ -84,30 +84,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   resetPassword: async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email)
-      if (error) throw error
-    } catch (error) {
-      throw error
-    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    if (error) throw error
   },
 
   updateProfile: async (updates: Partial<User>) => {
     const { user } = get()
     if (!user) throw new Error('No user logged in')
 
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update(updates)
-        .eq('id', user.id)
+    const { error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', user.id)
 
-      if (error) throw error
+    if (error) throw error
 
-      set({ user: { ...user, ...updates } })
-    } catch (error) {
-      throw error
-    }
+    set({ user: { ...user, ...updates } })
   },
 }))
 

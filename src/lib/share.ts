@@ -49,7 +49,7 @@ function decodeData(encoded: string): ShareableData {
     }
     
     return data
-  } catch (_error) {
+  } catch {
     throw new Error('Failed to decode shared data')
   }
 }

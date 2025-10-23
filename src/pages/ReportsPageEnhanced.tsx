@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
-import { FileText, Download, BarChart3, TrendingUp, DollarSign, Calendar, Printer, Share2, Upload, FileSpreadsheet } from 'lucide-react'
+import { FileText, Download, Printer, Share2, Upload, FileSpreadsheet } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { ErrorBoundary } from '../components/ui/ErrorBoundary'
 import { Section } from '../components/ui/Section'
 import { KeyValue } from '../components/ui/KeyValue'
 import { ReportHeader } from '../components/ui/ReportHeader'
-import { usd, pct, date } from '../lib/format'
-import { parseCSV, toCSV, generateCSVTemplate, validateCSVData, type Property, type PropertyResult } from '../lib/csv'
+import { usd, pct } from '../lib/format'
+import { parseCSV, toCSV, generateCSVTemplate, validateCSVData, type PropertyResult } from '../lib/csv'
 import { useFinanceWorker } from '../hooks/useFinanceWorker'
 import { useTranslation } from '../lib/i18n'
 
@@ -20,7 +20,6 @@ export default function ReportsPage() {
     expenseBreakdown: true,
     marketComparison: true,
   })
-  const [importedProperties, setImportedProperties] = useState<Property[]>([])
   const [propertyResults, setPropertyResults] = useState<PropertyResult[]>([])
   const [isProcessingCSV, setIsProcessingCSV] = useState(false)
   const [csvError, setCsvError] = useState<string | null>(null)
@@ -275,7 +274,7 @@ export default function ReportsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {propertyResults.map((property, index) => (
+                    {propertyResults.map((property) => (
                       <tr key={property.id} className="border-b">
                         <td className="p-2 font-medium">{property.address}</td>
                         <td className="p-2">{usd(property.purchasePrice)}</td>

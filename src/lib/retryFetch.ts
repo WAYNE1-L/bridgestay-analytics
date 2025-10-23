@@ -24,7 +24,7 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
     return (
       error.name === 'TypeError' || // Network error
       error.name === 'AbortError' || // Timeout
-      (error as any).status >= 500 // Server error
+      (error as { status?: number }).status && (error as { status: number }).status >= 500 // Server error
     )
   },
 }
@@ -90,8 +90,8 @@ export async function retryFetch(
 
       // Check if response is ok
       if (!response.ok) {
-        const error = new Error(`HTTP ${response.status}: ${response.statusText}`)
-        ;(error as any).status = response.status
+        const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & { status: number }
+        error.status = response.status
         throw error
       }
 
@@ -121,7 +121,7 @@ export async function retryFetch(
 /**
  * Convenience method for JSON responses
  */
-export async function retryFetchJson<T = any>(
+export async function retryFetchJson<T = unknown>(
   url: string,
   options: FetchOptions = {}
 ): Promise<T> {

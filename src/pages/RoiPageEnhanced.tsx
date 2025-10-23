@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Calculator, DollarSign, Percent, TrendingUp, Info, Share2, Printer, RotateCcw } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
@@ -7,7 +7,7 @@ import { Button } from '../components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip'
 import { RoiInputs } from '../lib/finance'
 import { usd, pct, number, formatWithSeparators, parseFormattedNumber } from '../lib/format'
-import { handleNumericInput, sanitizeNumber } from '../lib/inputHelpers'
+import { handleNumericInput } from '../lib/inputHelpers'
 import { RoiInputsSchema } from '../lib/validation'
 import { ZodError } from 'zod'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -43,7 +43,7 @@ export default function RoiPage() {
     for (const key of Object.keys(defaultInputs) as Array<keyof RoiInputs>) {
       const value = params.get(key)
       if (value !== null) {
-        urlInputs[key] = parseFloat(value) as any
+        urlInputs[key] = parseFloat(value)
       }
     }
     if (Object.keys(urlInputs).length > 0) {
@@ -65,7 +65,6 @@ export default function RoiPage() {
     return defaultInputs
   })
 
-  const [displayValues, setDisplayValues] = useState<Partial<Record<keyof RoiInputs, string>>>({})
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [isValid, setIsValid] = useState(false)
 
@@ -104,7 +103,7 @@ export default function RoiPage() {
     } catch (e) {
       if (e instanceof ZodError) {
         const fieldErrors: Record<string, string[]> = {}
-        (e as any).errors.forEach((err: any) => {
+        e.errors.forEach((err) => {
           const field = err.path[0] as string
           if (!fieldErrors[field]) {
             fieldErrors[field] = []
