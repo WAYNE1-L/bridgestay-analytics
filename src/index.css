@@ -132,6 +132,22 @@ html, body, #root {
   html, body { 
     height: auto !important; 
   }
+  
+  /* Modern break-inside support for print */
+  .avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;  /* legacy fallback */
+  }
+  
+  .page-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+  
+  .page-break-after {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
 }
 
 /* Disable problematic CSS properties during export */

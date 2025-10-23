@@ -40,7 +40,7 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
   };
 
   return (
-    <div className="mt-4">
+    <div className="avoid-break mt-4">
       <h3 className="mb-3 text-sm font-semibold text-gray-900">Monthly Payment Breakdown (First 12 Months)</h3>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
