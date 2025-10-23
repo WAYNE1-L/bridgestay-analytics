@@ -100,7 +100,7 @@ export default function App() {
         </div>
       </header>
       <main className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-2">
-        <section className="rounded-lg border bg-white p-4 shadow-sm">
+        <section className="avoid-break rounded-lg border bg-white p-4 shadow-sm">
           <h2 className="mb-3 text-base font-semibold text-gray-900">Inputs</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input label="Purchase price" name="purchasePrice" value={inputs.purchasePrice} onChange={handleChange} step={1000} />
@@ -119,7 +119,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="report-root" className="rounded-lg border bg-white p-4 shadow-sm">
+        <section id="report-root" className="avoid-break rounded-lg border bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-gray-900">Results</h2>
             <PdfExportButton />
@@ -135,14 +135,14 @@ export default function App() {
           </div>
 
           <h3 className="mt-4 text-sm font-semibold text-gray-900">Monthly expenses</h3>
-          <ul className="mt-2 divide-y rounded-md border">
+          <ul className="avoid-break mt-2 divide-y rounded-md border">
             <Row label="Fixed" value={formatCurrency(results.expenseBreakdown.fixed)} />
             <Row label="Variable" value={formatCurrency(results.expenseBreakdown.variable)} />
             <Row label="Total" value={formatCurrency(results.expenseBreakdown.total)} />
           </ul>
 
           <h3 className="mt-4 text-sm font-semibold text-gray-900">Amortization (first 12 months)</h3>
-          <div className="mt-2 overflow-x-auto">
+          <div className="avoid-break mt-2 overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead>
                 <tr className="text-gray-700">
@@ -177,7 +177,7 @@ export default function App() {
 
 function Stat({ label, value, positive }: { label: string; value: string; positive?: boolean }) {
   return (
-    <div className="rounded-md border p-3">
+    <div className="avoid-break rounded-md border p-3">
       <div className="text-xs text-gray-600">{label}</div>
       <div className={`mt-1 text-lg font-semibold ${positive === true ? 'text-emerald-600' : positive === false ? 'text-rose-600' : 'text-gray-900'}`}>{value}</div>
     </div>

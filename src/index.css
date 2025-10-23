@@ -95,3 +95,115 @@ html, body, #root {
 
 .exporting .border-gray-300 { border-color: rgb(209, 213, 219) !important; }
 .exporting .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
+
+/* ---- PDF export rules ---- */
+.exporting #report-root {
+  padding: 24px !important;
+  background: #fff !important;
+}
+
+/* 避免被分页切断的块：给所有结果卡片容器用这个类 */
+.exporting .avoid-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 导出时隐藏不需要出现在 PDF 里的元素（按钮/浮层/动画等） */
+.exporting .no-export {
+  display: none !important;
+}
+
+/* 颜色与阴影一致性 */
+.exporting * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* ===== ROBUST PRINT/EXPORT STYLES ===== */
+
+/* Print media queries for browser print functionality */
+@media print {
+  @page { 
+    size: A4; 
+    margin: 12mm; 
+  }
+  html, body { 
+    height: auto !important; 
+  }
+}
+
+/* Disable problematic CSS properties during export */
+.exporting *, .exporting *::before, .exporting *::after {
+  overflow: visible !important;
+  position: static !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  contain: none !important;
+  backface-visibility: visible !important;
+}
+
+/* Report root sizing for consistent PDF layout */
+.exporting #report-root {
+  width: 210mm;
+  max-width: 210mm;
+  padding: 24px !important;
+  background: #fff !important;
+}
+
+/* Page break control classes */
+.exporting .avoid-break {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+.exporting .page-break-before {
+  break-before: page !important;
+  page-break-before: always !important;
+}
+
+.exporting .page-break-after {
+  break-after: page !important;
+  page-break-after: always !important;
+}
+
+/* Hide elements during print/export */
+@media print {
+  .no-export, .print\:hidden { 
+    display: none !important; 
+  }
+  * { 
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact; 
+  }
+}
+
+/* Additional export-specific overrides */
+.exporting .no-export {
+  display: none !important;
+}
+
+/* Ensure all cards and containers avoid page breaks */
+.exporting .bg-white,
+.exporting .bg-gray-50,
+.exporting .border,
+.exporting .rounded-lg,
+.exporting .rounded-md,
+.exporting .p-4,
+.exporting .p-6,
+.exporting .shadow-sm {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+/* Fix any remaining layout issues */
+.exporting {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.exporting * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
