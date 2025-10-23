@@ -1,40 +1,64 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useAuthStore } from './stores/auth'
-import { AuthForm } from './components/AuthForm'
-import { SubscriptionPlans } from './components/SubscriptionPlans'
-import { PropertyCalculator } from './components/PropertyCalculator'
-import { Dashboard } from './components/Dashboard'
-import { useState } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
+import { AppLayout } from './components/layout/AppLayout'
+import { Loading } from './components/ui/Loading'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { ErrorElement } from './components/ErrorElement'
 
-function App() {
-  const { user, loading } = useAuthStore()
-  const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'reset'>('signin')
+// Lazy load pages for better performance
+const HomePage = lazy(() => import('./pages/HomePage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const RoiPage = lazy(() => import('./pages/RoiPage'))
+const ReportsPage = lazy(() => import('./pages/ReportsPage'))
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <AppLayout />,
+    errorElement: <ErrorElement />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard',
+        element: (
+          <Suspense fallback={<Loading message="Loading dashboard..." />}>
+            <DashboardPage />
+          </Suspense>
+        ),
+        errorElement: <ErrorElement />,
+      },
+      {
+        path: 'roi',
+        element: (
+          <Suspense fallback={<Loading message="Loading calculator..." />}>
+            <RoiPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'report',
+        element: (
+          <Suspense fallback={<Loading message="Loading reports..." />}>
+            <ReportsPage />
+          </Suspense>
+        ),
+        errorElement: <ErrorElement />,
+      },
+    ],
+  },
+])
 
-  if (!user) {
-    return <AuthForm mode={authMode} onModeChange={setAuthMode} />
-  }
-
+export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/calculator" element={<PropertyCalculator />} />
-          <Route path="/pricing" element={<SubscriptionPlans />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
   )
 }
-
-export default App

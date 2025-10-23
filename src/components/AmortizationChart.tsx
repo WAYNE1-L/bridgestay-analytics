@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { MonthlyCashFlowItem } from '../types/results';
-import { formatCurrency } from '../lib/format';
+import { usd } from '../lib/format';
 
 interface ChartDataItem {
   month: number;
@@ -30,7 +30,7 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
           <p className="font-medium text-gray-900">Month {label}</p>
           {payload.map((entry, index) => (
             <p key={index} style={{ color: entry.color }} className="text-sm">
-              {entry.name}: {formatCurrency(entry.value)}
+              {entry.name}: {usd(entry.value)}
             </p>
           ))}
         </div>

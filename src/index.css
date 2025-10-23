@@ -4,6 +4,11 @@ html, body, #root {
   height: 100%;
 }
 
+/* Typography utilities */
+.tabnums {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 /* Override Tailwind v4 oklch colors with rgb equivalents for PDF export compatibility */
 :root {
   /* Force all Tailwind colors to RGB values */
