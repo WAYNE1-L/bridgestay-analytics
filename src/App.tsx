@@ -3,7 +3,7 @@ import { calculateAll, type CalculatorInputs } from './utils/calculations'
 import { formatCurrency, formatPercent } from './lib/format'
 import type { CalculatorResults } from './types/results'
 import { AmortizationChart } from './components/AmortizationChart'
-import { PdfExportButton } from './components/PdfExportButton'
+import { PrintExportButton } from './components/PrintExportButton'
 import { DollarSign, Percent, Calendar, Wrench, Shield } from 'lucide-react'
 
 const defaultInputs: CalculatorInputs = {
@@ -100,7 +100,7 @@ export default function App() {
         </div>
       </header>
       <main className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-2">
-        <section className="avoid-break rounded-lg border bg-white p-4 shadow-sm">
+        <section className="section-wrap avoid-break rounded-lg border bg-white p-4 shadow-sm">
           <h2 className="mb-3 text-base font-semibold text-gray-900">Inputs</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input label="Purchase price" name="purchasePrice" value={inputs.purchasePrice} onChange={handleChange} step={1000} />
@@ -119,30 +119,49 @@ export default function App() {
           </div>
         </section>
 
-        <section id="report-root" className="avoid-break rounded-lg border bg-white p-4 shadow-sm">
+        <section id="report-root" className="report-column section-wrap avoid-break rounded-lg border bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-gray-900">Results</h2>
-            <PdfExportButton />
+            <PrintExportButton />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Stat label="Monthly cash flow" value={formatCurrency(results.summary.cashFlowMonthly)} positive={results.summary.cashFlowMonthly >= 0} />
-            <Stat label="Mortgage payment" value={formatCurrency(results.summary.monthlyMortgage)} />
-            <Stat label="NOI (monthly)" value={formatCurrency(results.summary.noiMonthly)} />
-            <Stat label="NOI (annual)" value={formatCurrency(results.summary.noiAnnual)} />
-            <Stat label="Cash on cash" value={formatPercent(results.summary.cashOnCashReturnPercent)} />
-            <Stat label="Cap rate" value={formatPercent(results.summary.capRatePercent)} />
-            <Stat label="5yr annualized" value={formatPercent(results.summary.annualizedFiveYearReturnPercent)} />
+            <div className="card avoid-break">
+              <Stat label="Monthly cash flow" value={formatCurrency(results.summary.cashFlowMonthly)} positive={results.summary.cashFlowMonthly >= 0} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="Mortgage payment" value={formatCurrency(results.summary.monthlyMortgage)} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="NOI (monthly)" value={formatCurrency(results.summary.noiMonthly)} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="NOI (annual)" value={formatCurrency(results.summary.noiAnnual)} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="Cash on cash" value={formatPercent(results.summary.cashOnCashReturnPercent)} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="Cap rate" value={formatPercent(results.summary.capRatePercent)} />
+            </div>
+            <div className="card avoid-break">
+              <Stat label="5yr annualized" value={formatPercent(results.summary.annualizedFiveYearReturnPercent)} />
+            </div>
           </div>
 
-          <h3 className="mt-4 text-sm font-semibold text-gray-900">Monthly expenses</h3>
-          <ul className="avoid-break mt-2 divide-y rounded-md border">
-            <Row label="Fixed" value={formatCurrency(results.expenseBreakdown.fixed)} />
-            <Row label="Variable" value={formatCurrency(results.expenseBreakdown.variable)} />
-            <Row label="Total" value={formatCurrency(results.expenseBreakdown.total)} />
-          </ul>
+          <div className="page-break-before"></div>
+          <div className="card-wrap avoid-break">
+            <h3 className="mt-4 text-sm font-semibold text-gray-900">Monthly expenses</h3>
+            <ul className="avoid-break mt-2 divide-y rounded-md border">
+              <Row label="Fixed" value={formatCurrency(results.expenseBreakdown.fixed)} />
+              <Row label="Variable" value={formatCurrency(results.expenseBreakdown.variable)} />
+              <Row label="Total" value={formatCurrency(results.expenseBreakdown.total)} />
+            </ul>
+          </div>
 
-          <h3 className="mt-4 text-sm font-semibold text-gray-900">Amortization (first 12 months)</h3>
-          <div className="avoid-break mt-2 overflow-x-auto">
+          <div className="page-break-before"></div>
+          <div className="card-wrap avoid-break">
+            <h3 className="mt-4 text-sm font-semibold text-gray-900">Amortization (first 12 months)</h3>
+            <div className="avoid-break mt-2 overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead>
                 <tr className="text-gray-700">
@@ -163,9 +182,13 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
-          <AmortizationChart items={results.amortization} monthlyRent={inputs.monthlyRent} />
+          <div className="page-break-before"></div>
+          <div className="card-wrap avoid-break">
+            <AmortizationChart items={results.amortization} monthlyRent={inputs.monthlyRent} />
+          </div>
         </section>
       </main>
       <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-gray-500">
@@ -177,7 +200,7 @@ export default function App() {
 
 function Stat({ label, value, positive }: { label: string; value: string; positive?: boolean }) {
   return (
-    <div className="avoid-break rounded-md border p-3">
+    <div className="rounded-md border p-3">
       <div className="text-xs text-gray-600">{label}</div>
       <div className={`mt-1 text-lg font-semibold ${positive === true ? 'text-emerald-600' : positive === false ? 'text-rose-600' : 'text-gray-900'}`}>{value}</div>
     </div>

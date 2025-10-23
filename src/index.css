@@ -223,3 +223,121 @@ html, body, #root {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
+/* ===== COMPREHENSIVE PRINT/EXPORT REFACTOR ===== */
+
+/* Print media queries for browser print functionality */
+@media print {
+  @page { 
+    size: A4; 
+    margin: 12mm; 
+  }
+  html, body { 
+    height: auto !important; 
+  }
+  
+  /* Modern break-inside support for print */
+  .avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;  /* legacy fallback */
+  }
+  
+  .page-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+  
+  .page-break-after {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+  
+  /* Hide non-essential elements */
+  .no-export, .print\:hidden { 
+    display: none !important; 
+  }
+  
+  /* Ensure color accuracy */
+  * { 
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact; 
+  }
+}
+
+/* Export mode styles */
+.exporting {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Disable problematic CSS properties during export */
+.exporting *, .exporting *::before, .exporting *::after {
+  overflow: visible !important;
+  position: static !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  contain: none !important;
+  backface-visibility: visible !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Report layout during export */
+.exporting .report-column {
+  width: 210mm;
+  max-width: 210mm;
+  padding: 24px !important;
+  background: #fff !important;
+  margin: 0 auto !important;
+}
+
+/* Card protection */
+.exporting .card {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  margin-bottom: 16px !important;
+}
+
+/* Section wrapping */
+.exporting .section-wrap {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  margin-bottom: 24px !important;
+}
+
+.exporting .card-wrap {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  margin-bottom: 16px !important;
+}
+
+/* Page break control */
+.exporting .page-break-before {
+  break-before: page !important;
+  page-break-before: always !important;
+}
+
+.exporting .page-break-after {
+  break-after: page !important;
+  page-break-after: always !important;
+}
+
+/* Hide elements during export */
+.exporting .no-export {
+  display: none !important;
+}
+
+/* Ensure all Tailwind components avoid breaks */
+.exporting .bg-white,
+.exporting .bg-gray-50,
+.exporting .border,
+.exporting .rounded-lg,
+.exporting .rounded-md,
+.exporting .p-4,
+.exporting .p-6,
+.exporting .shadow-sm,
+.exporting .shadow-lg {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
