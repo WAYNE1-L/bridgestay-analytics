@@ -35,14 +35,14 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
           ];
 
           props.forEach((p) => {
-            const v = (cs as any)[p] as string | undefined;
+            const v = (cs as CSSStyleDeclaration)[p] as string | undefined;
             if (!v) return;
             if (/oklch|oklab|display-p3|var\(/i.test(v)) {
               // 强制浏览器返回 rgb/rgba
-              (htmlEl.style as any).setProperty(p, v, 'important');
-              const rgb = (getComputedStyle(htmlEl) as any)[p] as string | undefined;
+              (htmlEl.style as CSSStyleDeclaration).setProperty(p, v, 'important');
+              const rgb = (getComputedStyle(htmlEl) as CSSStyleDeclaration)[p] as string | undefined;
               if (rgb && /^rgba?\(/i.test(rgb)) {
-                (htmlEl.style as any).setProperty(p, rgb, 'important');
+                (htmlEl.style as CSSStyleDeclaration).setProperty(p, rgb, 'important');
                 n++;
               }
             }
@@ -57,10 +57,18 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
           if (el instanceof SVGElement) {
             const fill = cs.fill, stroke = cs.stroke;
             if (fill && /oklch|oklab|var\(/i.test(fill)) {
-              const f = getComputedStyle(el).fill; if (/^rgba?\(/i.test(f)) el.setAttribute('fill', f), n++;
+              const f = getComputedStyle(el).fill;
+              if (/^rgba?\(/i.test(f)) {
+                el.setAttribute('fill', f);
+                n++;
+              }
             }
             if (stroke && /oklch|oklab|var\(/i.test(stroke)) {
-              const s = getComputedStyle(el).stroke; if (/^rgba?\(/i.test(s)) el.setAttribute('stroke', s), n++;
+              const s = getComputedStyle(el).stroke;
+              if (/^rgba?\(/i.test(s)) {
+                el.setAttribute('stroke', s);
+                n++;
+              }
             }
           }
         });
@@ -126,9 +134,10 @@ export function PdfExportButton({ className = '' }: PdfExportButtonProps) {
 
       const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       pdf.save(`bridge-stay-roi-${ts}.pdf`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('PDF Export Error:', e);
-      alert(`Failed to generate PDF: ${e?.message ?? 'Unknown error'}`);
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      alert(`Failed to generate PDF: ${errorMessage}`);
     } finally {
       const root = document.getElementById('report-root');
       if (root) root.classList.remove('exporting');

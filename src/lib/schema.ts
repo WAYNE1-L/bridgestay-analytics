@@ -172,7 +172,7 @@ export function validateRoiInputs(inputs: Partial<RoiInputs>): ValidationResult 
       errors: generalErrors,
       fieldErrors,
     }
-  } catch (error) {
+  } catch {
     return {
       success: false,
       errors: {

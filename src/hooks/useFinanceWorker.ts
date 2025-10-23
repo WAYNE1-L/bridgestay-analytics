@@ -29,7 +29,7 @@ export function useFinanceWorker(options: UseFinanceWorkerOptions = {}) {
     )
 
     workerRef.current.onmessage = (event) => {
-      const { type, payload, id } = event.data
+      const { type, payload } = event.data
       
       if (type === 'ROI_RESULT') {
         setResults(payload)
@@ -42,7 +42,7 @@ export function useFinanceWorker(options: UseFinanceWorkerOptions = {}) {
       }
     }
 
-    workerRef.current.onerror = (error) => {
+    workerRef.current.onerror = () => {
       setError('Worker error occurred')
       setIsCalculating(false)
       onError?.('Worker error occurred')

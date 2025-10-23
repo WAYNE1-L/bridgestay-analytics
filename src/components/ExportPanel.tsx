@@ -228,13 +228,53 @@ export function SimpleExportButton({
   className = '',
   onExport,
 }: ExportPanelProps) {
+  const [isExporting, setIsExporting] = useState(false)
+
+  const handleExport = async (format: 'pdf' | 'png' | 'json') => {
+    setIsExporting(true)
+    try {
+      let result
+      if (format === 'pdf') {
+        result = await exportToPDF(elementId, {
+          filename: metadata?.propertyName || 'roi-report.pdf'
+        })
+      } else if (format === 'png') {
+        result = await exportToPNG(elementId, {
+          filename: metadata?.propertyName || 'roi-report.png'
+        })
+      } else {
+        result = await exportAsJson(data, metadata)
+      }
+      
+      onExport?.(result)
+    } catch (error) {
+      onExport?.({ success: false, error: error instanceof Error ? error.message : 'Export failed' })
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
-    <ExportButton
-      elementId={elementId}
-      data={data}
-      metadata={metadata}
-      className={className}
-      onExport={onExport}
-    />
+    <div className={`flex items-center gap-2 ${className}`}>
+      <Button
+        onClick={() => handleExport('pdf')}
+        disabled={isExporting}
+        size="sm"
+        className="gap-2"
+      >
+        {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+        PDF
+      </Button>
+      <Button
+        onClick={() => handleExport('png')}
+        disabled={isExporting}
+        size="sm"
+        variant="outline"
+        className="gap-2"
+      >
+        {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Image className="h-4 w-4" />}
+        PNG
+      </Button>
+    </div>
   )
 }

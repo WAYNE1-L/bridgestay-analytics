@@ -27,7 +27,7 @@ function encodeData(data: ShareableData): string {
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '')
-  } catch (error) {
+  } catch {
     throw new Error('Failed to encode data for sharing')
   }
 }
@@ -49,7 +49,7 @@ function decodeData(encoded: string): ShareableData {
     }
     
     return data
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Failed to decode shared data')
   }
 }
@@ -117,7 +117,7 @@ export async function copyShareUrl(
   try {
     const url = generateShareUrl(data, metadata)
     await navigator.clipboard.writeText(url)
-  } catch (error) {
+  } catch {
     throw new Error('Failed to copy URL to clipboard')
   }
 }
@@ -191,7 +191,7 @@ export function importFromJson(file: File): Promise<ShareableData> {
         }
         
         resolve(data)
-      } catch (error) {
+      } catch {
         reject(new Error('Failed to parse JSON file'))
       }
     }

@@ -49,7 +49,7 @@ export function SubscriptionPlans() {
     }
   }
 
-  const isCurrentPlan = (planId: string) => {
+  const isCurrentPlan = () => {
     // This would be determined by the user's current subscription
     return false
   }
