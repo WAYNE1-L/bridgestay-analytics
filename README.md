@@ -1,158 +1,219 @@
-# BridgeStay ROI Calculator
+# BridgeStay Analytics
 
-A rental property calculator built with React, TypeScript, Vite, and Tailwind CSS. Quickly evaluate rental property deals with comprehensive KPIs, interactive charts, and PDF export capabilities.
+A comprehensive SaaS platform for real estate investment analysis, built with React, TypeScript, Tailwind CSS, Supabase, and Stripe.
 
-## Features
+## 🚀 Features
 
-### ✅ Complete Feature Set
-- [x] **Branding & Favicon** - BridgeStay logo, custom favicon, updated title
-- [x] **Types & Formatters** - Extracted result types and currency/percent formatters
-- [x] **Interactive Charts** - Recharts showing principal, interest, and cash flow trends
-- [x] **PDF Export** - Multi-page PDF export with high-quality rendering
-- [x] **Input Icons** - Semantic icons for better UX and visual clarity
+### Core Functionality
+- **Property Investment Calculator**: Analyze rental property ROI, cash flow, and profitability metrics
+- **Interactive Charts**: Visualize amortization schedules and cash flow projections
+- **PDF Export**: Generate professional investment reports with print-optimized layouts
+- **Data Persistence**: Save and manage property analyses with Supabase
 
-### Key Calculations
-- Monthly cash flow analysis
-- Mortgage payment calculations
-- Net Operating Income (NOI)
-- Cash-on-cash return percentage
-- Cap rate analysis
-- 5-year annualized return projection
-- Complete amortization schedule
-- Expense breakdown (fixed vs variable)
+### SaaS Features
+- **User Authentication**: Secure sign-up/sign-in with Supabase Auth
+- **Subscription Management**: Monthly plans with Stripe integration
+- **Dashboard**: Centralized view of all property analyses
+- **Data Storage**: Zillow/Census data snapshots for market insights
 
 ### Technical Features
-- Responsive design (mobile-first)
-- Interactive charts with tooltips
-- PDF export with pagination
-- Type-safe calculations
-- Accessible form inputs with icons
-- Tree-shakeable dependencies
+- **Modern Stack**: React 19, TypeScript, Tailwind CSS v4, Vite
+- **State Management**: Zustand for client-side state
+- **Routing**: React Router for SPA navigation
+- **API**: Netlify Functions for serverless backend
+- **Database**: Supabase with Row Level Security (RLS)
+- **Payments**: Stripe Checkout and Customer Portal
 
-## How to Run
+## 📁 Project Structure
 
-### Development
+```
+bridgestay-analytics/
+├── src/
+│   ├── components/           # React components
+│   │   ├── AuthForm.tsx      # Authentication UI
+│   │   ├── Dashboard.tsx     # Main dashboard
+│   │   ├── PropertyCalculator.tsx  # Calculator component
+│   │   ├── SubscriptionPlans.tsx   # Pricing plans
+│   │   ├── AmortizationChart.tsx   # Charts
+│   │   └── PrintExportButton.tsx   # PDF export
+│   ├── lib/                  # Utility libraries
+│   │   ├── supabase.ts       # Supabase client & types
+│   │   ├── stripe.ts         # Stripe configuration
+│   │   └── format.ts         # Data formatting utilities
+│   ├── stores/               # State management
+│   │   └── auth.ts           # Authentication store
+│   ├── types/                # TypeScript definitions
+│   │   └── results.ts        # Calculator result types
+│   ├── utils/                # Business logic
+│   │   └── calculations.ts   # ROI calculation engine
+│   ├── App.tsx               # Main app component
+│   └── main.tsx              # App entry point
+├── netlify/
+│   └── functions/            # Serverless API endpoints
+│       ├── create-checkout-session.ts
+│       ├── create-portal-session.ts
+│       └── stripe-webhook.ts
+├── supabase-schema.sql       # Database schema
+├── netlify.toml              # Netlify configuration
+└── env.example               # Environment variables template
+```
+
+## 🛠️ Setup & Installation
+
+### Prerequisites
+- Node.js 20+
+- npm or yarn
+- Supabase account
+- Stripe account
+- Netlify account
+
+### 1. Clone and Install
 ```bash
+git clone <repository-url>
+cd bridgestay-analytics
+npm install
+```
+
+### 2. Environment Setup
+```bash
+cp env.example .env.local
+```
+
+Update `.env.local` with your credentials:
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+VITE_APP_URL=http://localhost:8888
+```
+
+### 3. Database Setup
+1. Create a new Supabase project
+2. Run the SQL schema from `supabase-schema.sql`
+3. Enable Row Level Security (RLS) policies
+4. Set up authentication providers
+
+### 4. Stripe Configuration
+1. Create Stripe products and prices for subscription plans
+2. Update `SUBSCRIPTION_PLANS` in `src/lib/stripe.ts` with your price IDs
+3. Set up webhook endpoints for subscription events
+4. Configure environment variables in Netlify
+
+### 5. Development
+```bash
+# Start development server
 npm run dev
+
+# Start with Netlify Functions (recommended)
+npm run netlify:dev
 ```
 
-### Build for Production
-```bash
-npm run build
+## 🚀 Deployment
+
+### Netlify Deployment
+1. Connect your repository to Netlify
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Add environment variables in Netlify dashboard
+5. Deploy!
+
+### Environment Variables for Production
+```env
+VITE_SUPABASE_URL=your_production_supabase_url
+VITE_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+VITE_STRIPE_PUBLISHABLE_KEY=your_production_stripe_publishable_key
+VITE_APP_URL=https://your-domain.netlify.app
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ```
 
-### Type Checking & Linting
-```bash
-npm run check
-```
+## 💳 Subscription Plans
 
-## Manual QA Checklist
+### Basic Plan - $29/month
+- Up to 10 property analyses per month
+- Basic market data
+- PDF report export
+- Email support
 
-### ✅ Layout & Responsiveness
-- [x] Header displays BridgeStay logo and title correctly
-- [x] Mobile layout (360px width) renders properly
-- [x] Input form is responsive on small screens
-- [x] Results panel adapts to different screen sizes
-- [x] Chart is responsive and maintains aspect ratio
+### Pro Plan - $79/month
+- Unlimited property analyses
+- Advanced market data & trends
+- Zillow integration
+- Census data access
+- Priority support
+- Custom report templates
 
-### ✅ Functionality
-- [x] All input fields accept numeric values
-- [x] Calculations update in real-time as inputs change
-- [x] Chart renders with 12 data points (first year)
-- [x] Chart shows 3 lines: principal (blue), interest (red), cash flow (green)
-- [x] Chart tooltips display formatted currency values
-- [x] PDF export button works and shows loading state
-- [x] PDF includes header logo, chart, and KPI table
-- [x] PDF file size is reasonable (≤ 2-3 MB)
-- [x] PDF filename includes current date (YYYYMMDD format)
+### Enterprise Plan - $199/month
+- Everything in Pro
+- Team collaboration
+- White-label reports
+- API access
+- Custom integrations
+- Dedicated account manager
 
-### ✅ Edge Cases & Validation
-- [x] Empty input fields default to 0 (no crashes)
-- [x] Invalid numeric inputs are handled gracefully
-- [x] Negative values are processed correctly
-- [x] Very large numbers don't break the UI
-- [x] Chart handles edge cases (zero values, negative cash flow)
+## 🔧 API Endpoints
 
-### ✅ Accessibility
-- [x] Form labels are properly associated with inputs
-- [x] Icons are hidden from screen readers (`aria-hidden="true"`)
-- [x] Color contrast meets accessibility standards
-- [x] Keyboard navigation works for all interactive elements
-- [x] Focus states are visible and clear
+### Netlify Functions
+- `POST /.netlify/functions/create-checkout-session` - Create Stripe checkout session
+- `POST /.netlify/functions/create-portal-session` - Create Stripe customer portal session
+- `POST /.netlify/functions/stripe-webhook` - Handle Stripe webhooks
 
-### ✅ Performance
-- [x] Initial page load is fast (< 2 seconds)
-- [x] Chart renders smoothly without lag
-- [x] PDF generation completes within 5 seconds
-- [x] No memory leaks during extended use
-- [x] Bundle size remains reasonable
+### Supabase Tables
+- `users` - User profiles and subscription status
+- `property_snapshots` - Saved property analyses
+- `subscriptions` - Stripe subscription data
 
-## Known Limitations
+## 🎨 UI/UX Features
 
-- **Node.js Version**: Requires Node.js 20.19+ or 22.12+ (current: 20.17.0)
-- **PDF Export**: Limited to visible content in the results section
-- **Chart Data**: Shows first 12 months only for clarity
-- **Currency**: Hardcoded to USD formatting
-- **Validation**: Basic numeric validation only (no business rule validation)
+### Print/Export Optimization
+- Modern CSS `break-inside: avoid` for clean page breaks
+- Print-optimized layouts with A4 sizing
+- Comprehensive color normalization for PDF export
+- Responsive design for all screen sizes
 
-## Technical Stack
+### Authentication Flow
+- Clean sign-in/sign-up forms
+- Password reset functionality
+- Protected routes with automatic redirects
+- Persistent authentication state
 
-- **Frontend**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS v4
-- **Charts**: Recharts
-- **PDF Export**: jsPDF + html2canvas
-- **Icons**: Lucide React
-- **Build**: Vite with SWC
-- **Linting**: ESLint + TypeScript ESLint
+### Dashboard Experience
+- Property analysis history
+- Quick action cards
+- Subscription status overview
+- Responsive data tables
 
-## Project Structure
+## 🔒 Security
 
-```
-src/
-├── components/
-│   ├── AmortizationChart.tsx    # Interactive chart component
-│   └── PdfExportButton.tsx      # PDF export functionality
-├── lib/
-│   └── format.ts                # Currency/percent formatters
-├── types/
-│   └── results.ts               # TypeScript interfaces
-├── utils/
-│   └── calculations.ts          # Core calculation logic
-├── App.tsx                      # Main application component
-├── main.tsx                     # React entry point
-└── index.css                    # Tailwind CSS imports
-```
+- Row Level Security (RLS) in Supabase
+- Environment variable protection
+- Secure authentication with Supabase Auth
+- Stripe webhook signature verification
+- CORS configuration for API endpoints
 
-## Deployment
+## 📊 Analytics & Monitoring
 
-### Static Hosting
-The app uses relative asset paths and is ready for static hosting on:
-- Netlify
-- Vercel
-- GitHub Pages
-- Any CDN
+- User subscription tracking
+- Property analysis usage metrics
+- Stripe payment analytics
+- Error logging and monitoring
 
-### One-line Deploy Commands
-```bash
-# Netlify
-npx netlify-cli deploy --prod --dir=dist
-
-# Vercel
-npx vercel --prod
-
-# GitHub Pages (via GitHub Actions)
-# See .github/workflows/deploy.yml
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Make changes and test thoroughly
-4. Run `npm run check` to ensure no TypeScript/ESLint errors
-5. Commit with conventional commits: `feat: add new feature`
-6. Push and create a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support, email support@bridgestay-analytics.com or join our Discord community.
+
+---
+
+Built with ❤️ using React, TypeScript, Tailwind CSS, Supabase, and Stripe.
