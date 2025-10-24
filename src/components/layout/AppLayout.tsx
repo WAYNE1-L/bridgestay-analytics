@@ -27,7 +27,7 @@ export function AppLayout() {
       </a>
       
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
+        <nav className="container mx-auto px-4 h-16 flex items-center gap-6">
           <div className="mr-4 flex">
             <NavLink 
               to="/" 
@@ -39,7 +39,7 @@ export function AppLayout() {
               </span>
             </NavLink>
           </div>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          <div className="flex items-center space-x-6 text-sm font-medium">
             {navigation.map((item) => {
               const Icon = item.icon
               return (
@@ -57,21 +57,21 @@ export function AppLayout() {
                 </NavLink>
               )
             })}
-          </nav>
+          </div>
           <div className="ml-auto flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
-        </div>
+        </nav>
       </header>
       
-      <main id="main-content" className="container mx-auto max-w-6xl px-6 py-10">
+      <main id="main-content" className="container mx-auto px-4 py-6">
         <Outlet />
       </main>
       
       {/* Footer */}
       <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto max-w-6xl px-6 py-6">
+        <div className="container mx-auto px-4 py-6">
           <FooterVersion />
         </div>
       </footer>
