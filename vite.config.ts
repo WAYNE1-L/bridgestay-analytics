@@ -24,6 +24,7 @@ export default defineConfig({
     // Inject version and build info
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(process.env.VITE_BUILD_TIME || new Date().toISOString()),
+    VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version || '1.0.0'),
   },
   build: {
     rollupOptions: {
