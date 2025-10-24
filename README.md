@@ -1,219 +1,263 @@
 # BridgeStay Analytics
 
-A comprehensive SaaS platform for real estate investment analysis, built with React, TypeScript, Tailwind CSS, Supabase, and Stripe.
+A comprehensive real estate investment analysis platform built with React, TypeScript, and modern web technologies.
 
 ## 🚀 Features
 
-### Core Functionality
-- **Property Investment Calculator**: Analyze rental property ROI, cash flow, and profitability metrics
-- **Interactive Charts**: Visualize amortization schedules and cash flow projections
-- **PDF Export**: Generate professional investment reports with print-optimized layouts
-- **Data Persistence**: Save and manage property analyses with Supabase
+- **ROI Calculator**: Calculate return on investment with detailed financial metrics
+- **Cash Flow Analysis**: Analyze monthly and annual cash flow projections  
+- **Investment Dashboard**: Track and compare multiple properties
+- **Professional Reports**: Generate comprehensive investment reports
+- **Multi-language Support**: English and Chinese (中文) localization
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Dark Mode**: Toggle between light and dark themes
+- **Export Capabilities**: PDF, PNG, and JSON export options
+- **Real-time Calculations**: Instant updates as you input data
+- **Security First**: Comprehensive security headers and best practices
 
-### SaaS Features
-- **User Authentication**: Secure sign-up/sign-in with Supabase Auth
-- **Subscription Management**: Monthly plans with Stripe integration
-- **Dashboard**: Centralized view of all property analyses
-- **Data Storage**: Zillow/Census data snapshots for market insights
+## 🛠️ Tech Stack
 
-### Technical Features
-- **Modern Stack**: React 19, TypeScript, Tailwind CSS v4, Vite
-- **State Management**: Zustand for client-side state
-- **Routing**: React Router for SPA navigation
-- **API**: Netlify Functions for serverless backend
-- **Database**: Supabase with Row Level Security (RLS)
-- **Payments**: Stripe Checkout and Customer Portal
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS 4.x
+- **Charts**: Recharts
+- **Routing**: React Router v6
+- **State Management**: Zustand
+- **Validation**: Zod
+- **Testing**: Vitest, Playwright
+- **Internationalization**: i18next
+- **Error Monitoring**: Sentry
+- **Deployment**: Netlify, Vercel, Zeabur ready
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 20.19+ or 22.12+
+- npm 10+
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/bridgestay-analytics.git
+   cd bridgestay-analytics
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:5173`
 
 ## 📁 Project Structure
 
 ```
-bridgestay-analytics/
-├── src/
-│   ├── components/           # React components
-│   │   ├── AuthForm.tsx      # Authentication UI
-│   │   ├── Dashboard.tsx     # Main dashboard
-│   │   ├── PropertyCalculator.tsx  # Calculator component
-│   │   ├── SubscriptionPlans.tsx   # Pricing plans
-│   │   ├── AmortizationChart.tsx   # Charts
-│   │   └── PrintExportButton.tsx   # PDF export
-│   ├── lib/                  # Utility libraries
-│   │   ├── supabase.ts       # Supabase client & types
-│   │   ├── stripe.ts         # Stripe configuration
-│   │   └── format.ts         # Data formatting utilities
-│   ├── stores/               # State management
-│   │   └── auth.ts           # Authentication store
-│   ├── types/                # TypeScript definitions
-│   │   └── results.ts        # Calculator result types
-│   ├── utils/                # Business logic
-│   │   └── calculations.ts   # ROI calculation engine
-│   ├── App.tsx               # Main app component
-│   └── main.tsx              # App entry point
-├── netlify/
-│   └── functions/            # Serverless API endpoints
-│       ├── create-checkout-session.ts
-│       ├── create-portal-session.ts
-│       └── stripe-webhook.ts
-├── supabase-schema.sql       # Database schema
-├── netlify.toml              # Netlify configuration
-└── env.example               # Environment variables template
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # Base UI components (Button, Card, etc.)
+│   ├── layout/         # Layout components (AppLayout, etc.)
+│   └── ...             # Feature-specific components
+├── pages/              # Page components
+│   ├── HomePage.tsx
+│   ├── DashboardPage.tsx
+│   ├── RoiPage.tsx
+│   └── ReportsPage.tsx
+├── lib/                # Utility libraries
+│   ├── finance.ts      # Financial calculations
+│   ├── format.ts       # Number/currency formatting
+│   ├── i18n.ts         # Internationalization
+│   ├── errorLogger.ts  # Error monitoring
+│   └── ...             # Other utilities
+├── hooks/              # Custom React hooks
+├── types/              # TypeScript type definitions
+└── workers/            # Web Workers for heavy calculations
 ```
 
-## 🛠️ Setup & Installation
+## 🧪 Testing
 
-### Prerequisites
-- Node.js 20+
-- npm or yarn
-- Supabase account
-- Stripe account
-- Netlify account
-
-### 1. Clone and Install
+### Unit Tests
 ```bash
-git clone <repository-url>
-cd bridgestay-analytics
-npm install
+npm run test          # Run tests in watch mode
+npm run test:run      # Run tests once
+npm run test:coverage # Run with coverage
 ```
 
-### 2. Environment Setup
+### E2E Tests
 ```bash
-cp env.example .env.local
+npm run test:e2e      # Run Playwright tests
+npm run test:e2e:ui   # Run with UI
 ```
 
-Update `.env.local` with your credentials:
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-VITE_APP_URL=http://localhost:8888
-```
-
-### 3. Database Setup
-1. Create a new Supabase project
-2. Run the SQL schema from `supabase-schema.sql`
-3. Enable Row Level Security (RLS) policies
-4. Set up authentication providers
-
-### 4. Stripe Configuration
-1. Create Stripe products and prices for subscription plans
-2. Update `SUBSCRIPTION_PLANS` in `src/lib/stripe.ts` with your price IDs
-3. Set up webhook endpoints for subscription events
-4. Configure environment variables in Netlify
-
-### 5. Development
+### All Tests
 ```bash
-# Start development server
-npm run dev
-
-# Start with Netlify Functions (recommended)
-npm run netlify:dev
+npm run check         # TypeScript + ESLint
+npm run build         # Production build
 ```
 
 ## 🚀 Deployment
 
-### Netlify Deployment
-1. Connect your repository to Netlify
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variables in Netlify dashboard
-5. Deploy!
+### Netlify
+1. Connect your GitHub repository to Netlify
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Environment variables: Add your Sentry DSN and other config
 
-### Environment Variables for Production
-```env
-VITE_SUPABASE_URL=your_production_supabase_url
-VITE_SUPABASE_ANON_KEY=your_production_supabase_anon_key
-VITE_STRIPE_PUBLISHABLE_KEY=your_production_stripe_publishable_key
-VITE_APP_URL=https://your-domain.netlify.app
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+### Vercel
+1. Import your GitHub repository to Vercel
+2. Framework preset: Vite
+3. Build command: `npm run build`
+4. Output directory: `dist`
+
+### Zeabur
+1. Connect your GitHub repository to Zeabur
+2. Select "Static Site" type
+3. Build command: `npm run build`
+4. Output directory: `dist`
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `VITE_SENTRY_DSN` | Sentry error monitoring DSN | No | - |
+| `VITE_ANALYTICS_ID` | Analytics tracking ID | No | - |
+| `VITE_ENABLE_ERROR_REPORTING` | Enable error reporting | No | `true` |
+| `VITE_ENABLE_PERFORMANCE_MONITORING` | Enable performance monitoring | No | `true` |
+
+### Security Headers
+
+The application includes comprehensive security headers configured for all deployment platforms:
+
+- **Content Security Policy (CSP)**: Prevents XSS attacks
+- **HTTP Strict Transport Security (HSTS)**: Forces HTTPS
+- **X-Frame-Options**: Prevents clickjacking
+- **X-Content-Type-Options**: Prevents MIME sniffing
+- **Referrer Policy**: Controls referrer information
+- **Permissions Policy**: Restricts browser features
+
+## 🌍 Internationalization
+
+The application supports multiple languages:
+
+- **English (en)**: Default language
+- **Chinese (zh)**: 中文支持
+
+To add a new language:
+
+1. Add translations to `src/lib/i18n.ts`
+2. Update the `LanguageSwitcher` component
+3. Test with `npm run dev`
+
+## 📊 Performance
+
+### Bundle Analysis
+```bash
+npm run analyze        # Analyze bundle size
 ```
 
-## 💳 Subscription Plans
+### Lighthouse CI
+```bash
+npm run lighthouse:ci  # Run Lighthouse audits
+```
 
-### Basic Plan - $29/month
-- Up to 10 property analyses per month
-- Basic market data
-- PDF report export
-- Email support
-
-### Pro Plan - $79/month
-- Unlimited property analyses
-- Advanced market data & trends
-- Zillow integration
-- Census data access
-- Priority support
-- Custom report templates
-
-### Enterprise Plan - $199/month
-- Everything in Pro
-- Team collaboration
-- White-label reports
-- API access
-- Custom integrations
-- Dedicated account manager
-
-## 🔧 API Endpoints
-
-### Netlify Functions
-- `POST /.netlify/functions/create-checkout-session` - Create Stripe checkout session
-- `POST /.netlify/functions/create-portal-session` - Create Stripe customer portal session
-- `POST /.netlify/functions/stripe-webhook` - Handle Stripe webhooks
-
-### Supabase Tables
-- `users` - User profiles and subscription status
-- `property_snapshots` - Saved property analyses
-- `subscriptions` - Stripe subscription data
-
-## 🎨 UI/UX Features
-
-### Print/Export Optimization
-- Modern CSS `break-inside: avoid` for clean page breaks
-- Print-optimized layouts with A4 sizing
-- Comprehensive color normalization for PDF export
-- Responsive design for all screen sizes
-
-### Authentication Flow
-- Clean sign-in/sign-up forms
-- Password reset functionality
-- Protected routes with automatic redirects
-- Persistent authentication state
-
-### Dashboard Experience
-- Property analysis history
-- Quick action cards
-- Subscription status overview
-- Responsive data tables
+### Performance Metrics
+- **Largest chunk**: <200KB gzipped
+- **Initial bundle**: Optimized with code splitting
+- **Dynamic imports**: Heavy libraries loaded on demand
+- **Web Vitals**: Monitored and reported
 
 ## 🔒 Security
 
-- Row Level Security (RLS) in Supabase
-- Environment variable protection
-- Secure authentication with Supabase Auth
-- Stripe webhook signature verification
-- CORS configuration for API endpoints
+### Security Features
+- Input validation with Zod schemas
+- XSS protection via CSP headers
+- CSRF protection via SameSite cookies
+- Secure error handling without information leakage
+- Regular dependency audits
 
-## 📊 Analytics & Monitoring
-
-- User subscription tracking
-- Property analysis usage metrics
-- Stripe payment analytics
-- Error logging and monitoring
+### Security Checklist
+- [x] Content Security Policy implemented
+- [x] HSTS headers configured
+- [x] X-Frame-Options set to DENY
+- [x] Input validation with Zod
+- [x] Error handling without information leakage
+- [x] HTTPS enforcement
+- [x] Automated security audits in CI/CD
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Make your changes**
+4. **Run tests**
+   ```bash
+   npm run check
+   npm run test:run
+   npm run test:e2e
+   ```
+5. **Commit your changes**
+   ```bash
+   git commit -m "Add amazing feature"
+   ```
+6. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+7. **Open a Pull Request**
 
-## 📄 License
+### Development Guidelines
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- Follow TypeScript best practices
+- Write tests for new features
+- Update documentation as needed
+- Follow the existing code style
+- Use conventional commit messages
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-For support, email support@bridgestay-analytics.com or join our Discord community.
+- **Documentation**: Check this README and inline code comments
+- **Issues**: Open an issue on GitHub
+- **Discussions**: Use GitHub Discussions for questions
+- **Security**: Report security issues privately
+
+## 🗺️ Roadmap
+
+- [ ] **Advanced Analytics**: More sophisticated financial models
+- [ ] **Property Database**: Save and manage property portfolios
+- [ ] **Market Data Integration**: Real-time market data
+- [ ] **Collaboration Features**: Share analyses with team members
+- [ ] **Mobile App**: React Native mobile application
+- [ ] **API**: RESTful API for third-party integrations
+
+## 🙏 Acknowledgments
+
+- **React Team**: For the amazing React framework
+- **Vite Team**: For the lightning-fast build tool
+- **Tailwind CSS**: For the utility-first CSS framework
+- **Recharts**: For beautiful chart components
+- **Sentry**: For error monitoring and performance tracking
 
 ---
 
-Built with ❤️ using React, TypeScript, Tailwind CSS, Supabase, and Stripe.
+**Built with ❤️ for real estate investors**
