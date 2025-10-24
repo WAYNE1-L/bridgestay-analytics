@@ -54,6 +54,14 @@ const router = createBrowserRouter([
         ),
         errorElement: <ErrorElement />,
       },
+      {
+        path: '*',
+        element: (
+          <Suspense fallback={<Loading />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
     ],
   },
 ])
