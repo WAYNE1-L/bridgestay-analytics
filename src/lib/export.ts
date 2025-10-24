@@ -2,6 +2,8 @@
  * Enhanced export functionality for ROI calculator
  */
 
+import { loadPDFLibrary, loadCanvasLibrary } from './dynamicImports'
+
 export interface ExportOptions {
   format: 'pdf' | 'png' | 'json'
   filename?: string
@@ -26,8 +28,8 @@ export async function exportToPDF(
 ): Promise<ExportResult> {
   try {
     const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import('html2canvas'),
-      import('jspdf'),
+      loadCanvasLibrary(),
+      loadPDFLibrary(),
       document.fonts.ready,
     ])
 
@@ -148,7 +150,7 @@ export async function exportToPNG(
   options: Partial<ExportOptions> = {}
 ): Promise<ExportResult> {
   try {
-    const { default: html2canvas } = await import('html2canvas')
+    const { default: html2canvas } = await loadCanvasLibrary()
 
     const root = document.getElementById(elementId) as HTMLElement | null
     if (!root) {

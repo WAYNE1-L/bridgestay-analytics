@@ -24,14 +24,43 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          charts: ['recharts'],
-          ui: ['lucide-react'],
-          utils: ['clsx', 'tailwind-merge', 'zod'],
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom'],
+          
+          // Router
+          'router': ['react-router-dom'],
+          
+          // Charts and visualization
+          'charts': ['recharts'],
+          
+          // PDF generation (large library)
+          'pdf': ['jspdf'],
+          
+          // Canvas manipulation (large library)
+          'canvas': ['html2canvas-pro'],
+          
+          // UI components
+          'ui': ['lucide-react', 'clsx', 'tailwind-merge'],
+          
+          // Utilities
+          'utils': ['zod', 'zustand'],
+          
+          // External services
+          'services': ['@supabase/supabase-js', '@stripe/stripe-js'],
+          
+          // Monitoring
+          'monitoring': ['@sentry/react', 'web-vitals'],
         },
       },
     },
     chunkSizeWarningLimit: 200000, // 200KB
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
 })

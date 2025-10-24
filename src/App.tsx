@@ -5,12 +5,18 @@ import { Loading } from './components/ui/Loading'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ErrorElement } from './components/ErrorElement'
 import { initializeErrorLogger, reportWebVitals } from './lib/errorLogger'
+import { preloadCriticalResources, preloadNonCriticalResources } from './lib/dynamicImports'
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/HomePage'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const RoiPage = lazy(() => import('./pages/RoiPage'))
 const ReportsPage = lazy(() => import('./pages/ReportsPage'))
+
+// Lazy load heavy components
+const SensitivityChart = lazy(() => import('./components/SensitivityChart'))
+const AmortizationChart = lazy(() => import('./components/AmortizationChart'))
+const ExportPanel = lazy(() => import('./components/ExportPanel'))
 
 const router = createBrowserRouter([
   {
@@ -72,6 +78,21 @@ export default function App() {
       }).catch(() => {
         // web-vitals not available, skip
       })
+    }
+
+    // Preload critical resources after initial load
+    const timer = setTimeout(() => {
+      preloadCriticalResources()
+    }, 2000)
+
+    // Preload non-critical resources when user is idle
+    const idleTimer = setTimeout(() => {
+      preloadNonCriticalResources()
+    }, 10000)
+
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(idleTimer)
     }
   }, [])
 
