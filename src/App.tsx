@@ -6,17 +6,13 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ErrorElement } from './components/ErrorElement'
 import { initializeErrorLogger, reportWebVitals } from './lib/errorLogger'
 import { preloadCriticalResources, preloadNonCriticalResources } from './lib/dynamicImports'
+import './lib/i18n'
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/HomePage'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const RoiPage = lazy(() => import('./pages/RoiPage'))
 const ReportsPage = lazy(() => import('./pages/ReportsPage'))
-
-// Lazy load heavy components
-const SensitivityChart = lazy(() => import('./components/SensitivityChart'))
-const AmortizationChart = lazy(() => import('./components/AmortizationChart'))
-const ExportPanel = lazy(() => import('./components/ExportPanel'))
 
 const router = createBrowserRouter([
   {

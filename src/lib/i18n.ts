@@ -1,119 +1,110 @@
 /**
- * Internationalization (i18n) utilities and translations
+ * Internationalization configuration
+ * Supports English (en) and Chinese (zh)
  */
 
-export type Locale = 'en' | 'zh'
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
-export interface Translations {
-  common: {
-    loading: string
-    error: string
-    success: string
-    cancel: string
-    save: string
-    delete: string
-    edit: string
-    close: string
-    back: string
-    next: string
-    previous: string
-    submit: string
-    reset: string
-    copy: string
-    share: string
-    print: string
-    download: string
-    upload: string
-    search: string
-    filter: string
-    sort: string
-    export: string
-    import: string
-  }
-  navigation: {
-    home: string
-    dashboard: string
-    calculator: string
-    reports: string
-  }
-  calculator: {
-    title: string
-    subtitle: string
-    propertyDetails: string
-    financing: string
-    purchasePrice: string
-    downPayment: string
-    monthlyRent: string
-    interestRate: string
-    loanYears: string
-    propertyTax: string
-    insurance: string
-    hoa: string
-    management: string
-    maintenance: string
-    vacancy: string
-    results: string
-    monthlyCashFlow: string
-    annualCashFlow: string
-    capRate: string
-    roi: string
-    dscr: string
-    breakEvenRent: string
-    downPaymentAmount: string
-    loanAmount: string
-    monthlyPI: string
-    totalMonthlyExpenses: string
-    errors: {
-      required: string
-      invalidNumber: string
-      minValue: string
-      maxValue: string
-    }
-  }
-  reports: {
-    title: string
-    subtitle: string
-    modules: string
-    selectModules: string
-    propertyAnalysis: string
-    cashFlow: string
-    expenseBreakdown: string
-    marketComparison: string
-    executiveSummary: string
-    financialMetrics: string
-    expenseAnalysis: string
-    marketInsights: string
-    reportGenerated: string
-    importCSV: string
-    exportCSV: string
-    csvTemplate: string
-    selectFile: string
-    noFileSelected: string
-    invalidFile: string
-    processingFile: string
-    fileProcessed: string
-    errors: {
-      fileRequired: string
-      invalidFormat: string
-      parseError: string
-    }
-  }
-  dashboard: {
-    title: string
-    subtitle: string
-    totalProperties: string
-    totalCashFlow: string
-    averageROI: string
-    portfolioPerformance: string
-    propertyRankings: string
-    sortedByCashFlow: string
-    noProperties: string
-    addFirstProperty: string
-  }
-}
-
-const translations: Record<Locale, Translations> = {
-  en: {
+// English translations
+const en = {
+  translation: {
+    // Navigation
+    nav: {
+      home: 'Home',
+      dashboard: 'Dashboard',
+      calculator: 'ROI Calculator',
+      reports: 'Reports',
+    },
+    
+    // Home page
+    home: {
+      title: 'Real Estate Investment Analysis',
+      subtitle: 'Calculate ROI, analyze cash flow, and make informed investment decisions',
+      getStarted: 'Get Started',
+      viewDashboard: 'View Dashboard',
+      features: {
+        title: 'Powerful Investment Analysis Tools',
+        roi: {
+          title: 'ROI Calculator',
+          description: 'Calculate return on investment with detailed financial metrics',
+        },
+        cashflow: {
+          title: 'Cash Flow Analysis',
+          description: 'Analyze monthly and annual cash flow projections',
+        },
+        reports: {
+          title: 'Investment Reports',
+          description: 'Generate professional reports for your investments',
+        },
+      },
+    },
+    
+    // Dashboard
+    dashboard: {
+      title: 'Dashboard',
+      subtitle: 'Overview of your property investments',
+      totalProperties: 'Total Properties',
+      totalCashFlow: 'Total Cash Flow',
+      averageROI: 'Average ROI',
+      monthlyCashFlow: 'Monthly cash flow',
+      returnOnInvestment: 'Return on investment',
+      activeInvestments: 'Active investments',
+      portfolioPerformance: 'Portfolio Performance',
+      monthlyTrends: 'Monthly cash flow and ROI trends',
+      propertyRankings: 'Property Rankings',
+      sortedByCashFlow: 'Properties sorted by monthly cash flow',
+      noProperties: 'No properties found',
+      addFirstProperty: 'Add Your First Property',
+    },
+    
+    // ROI Calculator
+    roi: {
+      title: 'ROI Calculator',
+      subtitle: 'Calculate return on investment for your property',
+      propertyInfo: 'Property Information',
+      purchasePrice: 'Purchase Price',
+      downPayment: 'Down Payment',
+      monthlyRent: 'Monthly Rent',
+      monthlyExpenses: 'Monthly Expenses',
+      financing: 'Financing',
+      interestRate: 'Interest Rate',
+      loanTerm: 'Loan Term (years)',
+      operatingExpenses: 'Operating Expenses',
+      propertyTax: 'Property Tax (%)',
+      insurance: 'Insurance (monthly)',
+      hoa: 'HOA (monthly)',
+      management: 'Management (%)',
+      maintenance: 'Maintenance (%)',
+      vacancy: 'Vacancy (%)',
+      results: 'Results',
+      monthlyCashFlow: 'Monthly Cash Flow',
+      annualCashFlow: 'Annual Cash Flow',
+      capRate: 'Cap Rate',
+      roi: 'ROI',
+      calculate: 'Calculate',
+      reset: 'Reset',
+      share: 'Share',
+      export: 'Export',
+    },
+    
+    // Reports
+    reports: {
+      title: 'Reports',
+      subtitle: 'Generate and export investment reports',
+      generateReport: 'Generate Report',
+      exportPDF: 'Export PDF',
+      exportPNG: 'Export PNG',
+      exportJSON: 'Export JSON',
+      shareLink: 'Share Link',
+      propertyAnalysis: 'Property Analysis',
+      cashFlow: 'Cash Flow',
+      expenseBreakdown: 'Expense Breakdown',
+      marketComparison: 'Market Comparison',
+    },
+    
+    // Common
     common: {
       loading: 'Loading...',
       error: 'Error',
@@ -122,105 +113,142 @@ const translations: Record<Locale, Translations> = {
       save: 'Save',
       delete: 'Delete',
       edit: 'Edit',
+      view: 'View',
       close: 'Close',
-      back: 'Back',
       next: 'Next',
       previous: 'Previous',
       submit: 'Submit',
-      reset: 'Reset',
-      copy: 'Copy',
-      share: 'Share',
-      print: 'Print',
-      download: 'Download',
-      upload: 'Upload',
-      search: 'Search',
-      filter: 'Filter',
-      sort: 'Sort',
-      export: 'Export',
-      import: 'Import',
+      back: 'Back',
+      continue: 'Continue',
+      done: 'Done',
+      yes: 'Yes',
+      no: 'No',
+      ok: 'OK',
+      currency: 'USD',
+      percentage: '%',
+      date: 'Date',
+      amount: 'Amount',
+      property: 'Property',
+      address: 'Address',
+      type: 'Type',
+      status: 'Status',
     },
-    navigation: {
-      home: 'Home',
-      dashboard: 'Dashboard',
-      calculator: 'ROI Calculator',
-      reports: 'Reports',
-    },
-    calculator: {
-      title: 'ROI Calculator',
-      subtitle: 'Comprehensive real estate investment analysis',
-      propertyDetails: 'Property Details & Financing',
-      financing: 'Enter the property and loan information',
-      purchasePrice: 'Purchase Price',
-      downPayment: 'Down Payment %',
-      monthlyRent: 'Monthly Rent',
-      interestRate: 'Interest Rate %',
-      loanYears: 'Loan Term (Years)',
-      propertyTax: 'Property Tax % (Annual)',
-      insurance: 'Monthly Insurance',
-      hoa: 'Monthly HOA',
-      management: 'Management Fee %',
-      maintenance: 'Maintenance %',
-      vacancy: 'Vacancy %',
-      results: 'Investment Analysis',
-      monthlyCashFlow: 'Monthly Cash Flow',
-      annualCashFlow: 'Annual Cash Flow',
-      capRate: 'Cap Rate',
-      roi: 'Cash-on-Cash Return',
-      dscr: 'DSCR',
-      breakEvenRent: 'Break-Even Rent',
-      downPaymentAmount: 'Down Payment',
-      loanAmount: 'Loan Amount',
-      monthlyPI: 'Monthly P&I',
-      totalMonthlyExpenses: 'Total Monthly Expenses',
-      errors: {
-        required: 'This field is required',
-        invalidNumber: 'Please enter a valid number',
-        minValue: 'Value must be greater than {min}',
-        maxValue: 'Value must be less than {max}',
-      },
-    },
-    reports: {
-      title: 'Investment Reports',
-      subtitle: 'Generate and download detailed property analysis reports',
-      modules: 'Report Modules',
-      selectModules: 'Select which sections to include in your report',
-      propertyAnalysis: 'Property Analysis',
-      cashFlow: 'Cash Flow',
-      expenseBreakdown: 'Expense Breakdown',
-      marketComparison: 'Market Comparison',
-      executiveSummary: 'Executive Summary',
-      financialMetrics: 'Financial Metrics',
-      expenseAnalysis: 'Expense Analysis',
-      marketInsights: 'Market Comparison',
-      reportGenerated: 'Report generated on {date} • BridgeStay Analytics',
-      importCSV: 'Import CSV',
-      exportCSV: 'Export CSV',
-      csvTemplate: 'Download Template',
-      selectFile: 'Select CSV File',
-      noFileSelected: 'No file selected',
-      invalidFile: 'Invalid file format',
-      processingFile: 'Processing file...',
-      fileProcessed: 'File processed successfully',
-      errors: {
-        fileRequired: 'Please select a file',
-        invalidFormat: 'Invalid CSV format',
-        parseError: 'Error parsing CSV file',
-      },
-    },
-    dashboard: {
-      title: 'Dashboard',
-      subtitle: 'Overview of your property investments',
-      totalProperties: 'Total Properties',
-      totalCashFlow: 'Total Cash Flow',
-      averageROI: 'Average ROI',
-      portfolioPerformance: 'Portfolio Performance',
-      propertyRankings: 'Property Rankings',
-      sortedByCashFlow: 'Properties sorted by monthly cash flow',
-      noProperties: 'No properties found',
-      addFirstProperty: 'Add Your First Property',
+    
+    // Errors
+    errors: {
+      somethingWentWrong: 'Something went wrong',
+      tryAgain: 'Try Again',
+      refreshPage: 'Refresh Page',
+      goHome: 'Go Home',
+      contactSupport: 'Contact Support',
+      invalidInput: 'Invalid input',
+      required: 'This field is required',
+      minValue: 'Minimum value is {{min}}',
+      maxValue: 'Maximum value is {{max}}',
+      networkError: 'Network error. Please check your connection.',
+      serverError: 'Server error. Please try again later.',
     },
   },
-  zh: {
+}
+
+// Chinese translations
+const zh = {
+  translation: {
+    // Navigation
+    nav: {
+      home: '首页',
+      dashboard: '仪表板',
+      calculator: '投资回报率计算器',
+      reports: '报告',
+    },
+    
+    // Home page
+    home: {
+      title: '房地产投资分析',
+      subtitle: '计算投资回报率，分析现金流，做出明智的投资决策',
+      getStarted: '开始使用',
+      viewDashboard: '查看仪表板',
+      features: {
+        title: '强大的投资分析工具',
+        roi: {
+          title: '投资回报率计算器',
+          description: '通过详细的财务指标计算投资回报率',
+        },
+        cashflow: {
+          title: '现金流分析',
+          description: '分析月度和年度现金流预测',
+        },
+        reports: {
+          title: '投资报告',
+          description: '为您的投资生成专业报告',
+        },
+      },
+    },
+    
+    // Dashboard
+    dashboard: {
+      title: '仪表板',
+      subtitle: '您的房地产投资概览',
+      totalProperties: '总房产数',
+      totalCashFlow: '总现金流',
+      averageROI: '平均投资回报率',
+      monthlyCashFlow: '月度现金流',
+      returnOnInvestment: '投资回报',
+      activeInvestments: '活跃投资',
+      portfolioPerformance: '投资组合表现',
+      monthlyTrends: '月度现金流和投资回报率趋势',
+      propertyRankings: '房产排名',
+      sortedByCashFlow: '按月度现金流排序的房产',
+      noProperties: '未找到房产',
+      addFirstProperty: '添加您的第一个房产',
+    },
+    
+    // ROI Calculator
+    roi: {
+      title: '投资回报率计算器',
+      subtitle: '计算您房产的投资回报率',
+      propertyInfo: '房产信息',
+      purchasePrice: '购买价格',
+      downPayment: '首付',
+      monthlyRent: '月租金',
+      monthlyExpenses: '月支出',
+      financing: '融资',
+      interestRate: '利率',
+      loanTerm: '贷款期限（年）',
+      operatingExpenses: '运营费用',
+      propertyTax: '房产税 (%)',
+      insurance: '保险（月）',
+      hoa: '物业费（月）',
+      management: '管理费 (%)',
+      maintenance: '维护费 (%)',
+      vacancy: '空置率 (%)',
+      results: '结果',
+      monthlyCashFlow: '月度现金流',
+      annualCashFlow: '年度现金流',
+      capRate: '资本化率',
+      roi: '投资回报率',
+      calculate: '计算',
+      reset: '重置',
+      share: '分享',
+      export: '导出',
+    },
+    
+    // Reports
+    reports: {
+      title: '报告',
+      subtitle: '生成和导出投资报告',
+      generateReport: '生成报告',
+      exportPDF: '导出PDF',
+      exportPNG: '导出PNG',
+      exportJSON: '导出JSON',
+      shareLink: '分享链接',
+      propertyAnalysis: '房产分析',
+      cashFlow: '现金流',
+      expenseBreakdown: '费用明细',
+      marketComparison: '市场比较',
+    },
+    
+    // Common
     common: {
       loading: '加载中...',
       error: '错误',
@@ -229,159 +257,64 @@ const translations: Record<Locale, Translations> = {
       save: '保存',
       delete: '删除',
       edit: '编辑',
+      view: '查看',
       close: '关闭',
-      back: '返回',
       next: '下一步',
       previous: '上一步',
       submit: '提交',
-      reset: '重置',
-      copy: '复制',
-      share: '分享',
-      print: '打印',
-      download: '下载',
-      upload: '上传',
-      search: '搜索',
-      filter: '筛选',
-      sort: '排序',
-      export: '导出',
-      import: '导入',
+      back: '返回',
+      continue: '继续',
+      done: '完成',
+      yes: '是',
+      no: '否',
+      ok: '确定',
+      currency: '美元',
+      percentage: '%',
+      date: '日期',
+      amount: '金额',
+      property: '房产',
+      address: '地址',
+      type: '类型',
+      status: '状态',
     },
-    navigation: {
-      home: '首页',
-      dashboard: '仪表板',
-      calculator: '投资回报计算器',
-      reports: '报告',
-    },
-    calculator: {
-      title: '投资回报计算器',
-      subtitle: '全面的房地产投资分析',
-      propertyDetails: '房产详情和融资',
-      financing: '输入房产和贷款信息',
-      purchasePrice: '购买价格',
-      downPayment: '首付比例 %',
-      monthlyRent: '月租金',
-      interestRate: '利率 %',
-      loanYears: '贷款年限',
-      propertyTax: '房产税 % (年)',
-      insurance: '月保险费',
-      hoa: '月物业费',
-      management: '管理费 %',
-      maintenance: '维护费 %',
-      vacancy: '空置率 %',
-      results: '投资分析',
-      monthlyCashFlow: '月现金流',
-      annualCashFlow: '年现金流',
-      capRate: '资本化率',
-      roi: '现金回报率',
-      dscr: '债务覆盖率',
-      breakEvenRent: '盈亏平衡租金',
-      downPaymentAmount: '首付金额',
-      loanAmount: '贷款金额',
-      monthlyPI: '月供本息',
-      totalMonthlyExpenses: '月总支出',
-      errors: {
-        required: '此字段为必填项',
-        invalidNumber: '请输入有效数字',
-        minValue: '值必须大于 {min}',
-        maxValue: '值必须小于 {max}',
-      },
-    },
-    reports: {
-      title: '投资报告',
-      subtitle: '生成和下载详细的房产分析报告',
-      modules: '报告模块',
-      selectModules: '选择要在报告中包含的部分',
-      propertyAnalysis: '房产分析',
-      cashFlow: '现金流',
-      expenseBreakdown: '支出明细',
-      marketComparison: '市场对比',
-      executiveSummary: '执行摘要',
-      financialMetrics: '财务指标',
-      expenseAnalysis: '支出分析',
-      marketInsights: '市场对比',
-      reportGenerated: '报告生成于 {date} • BridgeStay Analytics',
-      importCSV: '导入 CSV',
-      exportCSV: '导出 CSV',
-      csvTemplate: '下载模板',
-      selectFile: '选择 CSV 文件',
-      noFileSelected: '未选择文件',
-      invalidFile: '无效的文件格式',
-      processingFile: '处理文件中...',
-      fileProcessed: '文件处理成功',
-      errors: {
-        fileRequired: '请选择文件',
-        invalidFormat: '无效的 CSV 格式',
-        parseError: '解析 CSV 文件时出错',
-      },
-    },
-    dashboard: {
-      title: '仪表板',
-      subtitle: '您的房产投资概览',
-      totalProperties: '总房产数',
-      totalCashFlow: '总现金流',
-      averageROI: '平均投资回报率',
-      portfolioPerformance: '投资组合表现',
-      propertyRankings: '房产排名',
-      sortedByCashFlow: '按月现金流排序的房产',
-      noProperties: '未找到房产',
-      addFirstProperty: '添加您的第一个房产',
+    
+    // Errors
+    errors: {
+      somethingWentWrong: '出现错误',
+      tryAgain: '重试',
+      refreshPage: '刷新页面',
+      goHome: '返回首页',
+      contactSupport: '联系支持',
+      invalidInput: '输入无效',
+      required: '此字段为必填项',
+      minValue: '最小值为 {{min}}',
+      maxValue: '最大值为 {{max}}',
+      networkError: '网络错误。请检查您的连接。',
+      serverError: '服务器错误。请稍后重试。',
     },
   },
 }
 
-// Current locale state
-let currentLocale: Locale = 'en'
+// Initialize i18n
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en,
+      zh,
+    },
+    fallbackLng: 'en',
+    debug: import.meta.env.MODE === 'development',
+    
+    interpolation: {
+      escapeValue: false, // React already escapes values
+    },
+    
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+    },
+  })
 
-// Translation function
-export function t(key: string, params?: Record<string, string | number>): string {
-  const keys = key.split('.')
-  let value: unknown = translations[currentLocale]
-  
-  for (const k of keys) {
-    value = (value as Record<string, unknown>)?.[k]
-  }
-  
-  if (typeof value !== 'string') {
-    console.warn(`Translation missing for key: ${key}`)
-    return key
-  }
-  
-  // Replace parameters
-  if (params) {
-    return value.replace(/\{(\w+)\}/g, (match, paramKey) => {
-      return String(params[paramKey] || match)
-    })
-  }
-  
-  return value
-}
-
-// Set locale
-export function setLocale(locale: Locale): void {
-  currentLocale = locale
-  localStorage.setItem('locale', locale)
-  document.documentElement.lang = locale
-}
-
-// Get current locale
-export function getLocale(): Locale {
-  return currentLocale
-}
-
-// Initialize locale from localStorage or browser
-export function initializeLocale(): void {
-  const savedLocale = localStorage.getItem('locale') as Locale
-  const browserLocale = navigator.language.startsWith('zh') ? 'zh' : 'en'
-  const locale = savedLocale || browserLocale
-  
-  setLocale(locale)
-}
-
-// Hook for using translations in React components
-export function useTranslation() {
-  return {
-    t,
-    locale: currentLocale,
-    setLocale,
-  }
-}
+export default i18n

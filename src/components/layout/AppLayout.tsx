@@ -2,16 +2,19 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, BarChart3, Calculator, FileText } from 'lucide-react'
 import { NavItem } from '../../types'
 import { ThemeToggle } from '../ui/ThemeToggle'
-
-const navigation: NavItem[] = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-  { name: 'ROI Calculator', href: '/roi', icon: Calculator },
-  { name: 'Reports', href: '/report', icon: FileText },
-]
+import { LanguageSwitcher } from '../LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 export function AppLayout() {
   const location = useLocation()
+  const { t } = useTranslation()
+
+  const navigation: NavItem[] = [
+    { name: t('nav.home'), href: '/', icon: Home },
+    { name: t('nav.dashboard'), href: '/dashboard', icon: BarChart3 },
+    { name: t('nav.calculator'), href: '/roi', icon: Calculator },
+    { name: t('nav.reports'), href: '/report', icon: FileText },
+  ]
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,7 +58,8 @@ export function AppLayout() {
               )
             })}
           </nav>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
