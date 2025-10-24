@@ -1,4 +1,5 @@
 import React from 'react'
+import { captureErrorBoundaryError } from '../../lib/errorLogger'
 
 interface AppErrorBoundaryProps {
   error: Error | string | unknown
@@ -6,6 +7,16 @@ interface AppErrorBoundaryProps {
 }
 
 export function AppErrorBoundary({ error, reset }: AppErrorBoundaryProps) {
+  // Capture error for logging
+  React.useEffect(() => {
+    if (error instanceof Error) {
+      captureErrorBoundaryError(error, {
+        componentStack: 'AppErrorBoundary',
+        errorBoundaryName: 'AppErrorBoundary',
+      })
+    }
+  }, [error])
+
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">

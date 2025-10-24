@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { AppLayout } from './components/layout/AppLayout'
 import { Loading } from './components/ui/Loading'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ErrorElement } from './components/ErrorElement'
+import { initializeErrorLogger, reportWebVitals } from './lib/errorLogger'
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -56,6 +57,24 @@ const router = createBrowserRouter([
 ])
 
 export default function App() {
+  // Initialize error logging
+  useEffect(() => {
+    initializeErrorLogger()
+    
+    // Set up web vitals reporting
+    if ('web-vital' in window) {
+      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(reportWebVitals)
+        getFID(reportWebVitals)
+        getFCP(reportWebVitals)
+        getLCP(reportWebVitals)
+        getTTFB(reportWebVitals)
+      }).catch(() => {
+        // web-vitals not available, skip
+      })
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
       <RouterProvider router={router} />

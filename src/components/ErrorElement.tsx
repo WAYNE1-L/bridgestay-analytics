@@ -2,6 +2,7 @@ import React from 'react'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { captureRouterError } from '../lib/errorLogger'
 
 interface ErrorElementProps {
   error?: Error | null
@@ -9,6 +10,13 @@ interface ErrorElementProps {
 }
 
 export function ErrorElement({ error, reset }: ErrorElementProps) {
+  // Capture router error for logging
+  React.useEffect(() => {
+    if (error instanceof Error) {
+      captureRouterError(error, window.location.pathname)
+    }
+  }, [error])
+
   const handleGoHome = () => {
     window.location.href = '/'
   }

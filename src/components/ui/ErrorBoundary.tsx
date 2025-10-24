@@ -2,6 +2,7 @@ import { Component, ReactNode, ErrorInfo } from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from './card'
 import { Button } from './button'
+import { captureErrorBoundaryError } from '../../lib/errorLogger'
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -28,6 +29,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ error, errorInfo })
     this.props.onError?.(error, errorInfo)
+    
+    // Capture error for logging
+    captureErrorBoundaryError(error, errorInfo)
     
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {

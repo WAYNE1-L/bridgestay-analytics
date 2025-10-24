@@ -17,6 +17,8 @@
     "netlify:build": "npm run build && netlify build"
   },
   "dependencies": {
+    "@sentry/react": "^10.21.0",
+    "@sentry/vite-plugin": "^4.5.0",
     "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.45.4",
     "@tailwindcss/vite": "^4.1.15",
@@ -30,6 +32,7 @@
     "recharts": "^3.3.0",
     "stripe": "^17.3.1",
     "tailwind-merge": "^3.3.1",
+    "web-vitals": "^5.1.0",
     "zod": "^4.1.12",
     "zustand": "^5.0.2"
   },
