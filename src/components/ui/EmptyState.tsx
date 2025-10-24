@@ -1,88 +1,52 @@
-import { ReactNode } from 'react'
-import { Card, CardContent } from './card'
-import { Button } from './button'
-import { FileX, Search, AlertCircle, RefreshCw } from 'lucide-react'
+import React from 'react'
+import { FileX, BarChart3, TrendingUp, PieChart } from 'lucide-react'
 
-interface EmptyStateProps {
-  icon?: ReactNode
+export interface EmptyStateProps {
   title: string
-  description: string
-  action?: {
-    label: string
-    onClick: () => void
-  }
+  description?: string
+  icon?: 'chart' | 'data' | 'trend' | 'pie' | 'file'
+  action?: React.ReactNode
   className?: string
 }
 
+const iconMap = {
+  chart: BarChart3,
+  data: TrendingUp,
+  trend: TrendingUp,
+  pie: PieChart,
+  file: FileX,
+}
+
 export function EmptyState({ 
-  icon, 
   title, 
   description, 
-  action, 
+  icon = 'chart', 
+  action,
   className = '' 
 }: EmptyStateProps) {
+  const IconComponent = iconMap[icon]
+
   return (
-    <Card className={`border-dashed ${className}`}>
-      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="mb-4 text-gray-400 dark:text-gray-500">
-          {icon || <FileX className="h-12 w-12" />}
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          {title}
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+    <div className={`flex flex-col items-center justify-center p-8 text-center ${className}`}>
+      <div className="mb-4 rounded-full bg-gray-100 p-3 dark:bg-gray-800">
+        <IconComponent className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+      </div>
+      
+      <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+        {title}
+      </h3>
+      
+      {description && (
+        <p className="mb-4 max-w-sm text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
-        {action && (
-          <Button onClick={action.onClick} variant="outline">
-            {action.label}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-export function NoDataEmptyState({ onRefresh }: { onRefresh?: () => void }) {
-  return (
-    <EmptyState
-      icon={<Search className="h-12 w-12" />}
-      title="No data available"
-      description="There's no data to display at the moment. Try refreshing or check back later."
-      action={onRefresh ? { label: 'Refresh', onClick: onRefresh } : undefined}
-    />
-  )
-}
-
-export function ErrorEmptyState({ 
-  error, 
-  onRetry 
-}: { 
-  error?: string
-  onRetry?: () => void 
-}) {
-  return (
-    <EmptyState
-      icon={<AlertCircle className="h-12 w-12 text-red-500" />}
-      title="Something went wrong"
-      description={error || "We encountered an error while loading the data. Please try again."}
-      action={onRetry ? { label: 'Try Again', onClick: onRetry } : undefined}
-    />
-  )
-}
-
-export function LoadingEmptyState() {
-  return (
-    <Card className="border-dashed">
-      <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <RefreshCw className="h-12 w-12 text-gray-400 dark:text-gray-500 animate-spin mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          Loading...
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400">
-          Please wait while we fetch the data.
-        </p>
-      </CardContent>
-    </Card>
+      )}
+      
+      {action && (
+        <div className="mt-2">
+          {action}
+        </div>
+      )}
+    </div>
   )
 }

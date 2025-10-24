@@ -1,6 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from 'react';
 import type { MonthlyCashFlowItem } from '../types/results';
 import { usd } from '../lib/format';
+import { EmptyState } from './ui/EmptyState';
 
 interface ChartDataItem {
   month: number;
@@ -15,6 +17,32 @@ interface AmortizationChartProps {
 }
 
 export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps) {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Guard against empty/null data
+  if (!items || items.length === 0) {
+    return (
+      <div className="avoid-break mt-4">
+        <h3 className="mb-3 text-sm font-semibold text-gray-900">Monthly Payment Breakdown (First 12 Months)</h3>
+        <EmptyState 
+          title="No amortization data"
+          description="Enter valid loan details to see the payment breakdown over time."
+          icon="chart"
+        />
+      </div>
+    );
+  }
+
   // Transform data for chart - limit to first 12 months
   const chartData: ChartDataItem[] = items.slice(0, 12).map(item => ({
     month: item.month,
@@ -51,14 +79,16 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
               stroke="#6b7280"
               fontSize={12}
               tickFormatter={(value) => `M${value}`}
+              aria-label="Month number"
             />
             <YAxis 
               stroke="#6b7280"
               fontSize={12}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              aria-label="Payment amount in thousands"
             />
             <Tooltip content={<CustomTooltip />} />
-            <Legend />
+            <Legend aria-label="Chart legend showing principal, interest, and cash flow lines" />
             <Line 
               type="monotone" 
               dataKey="principal" 
@@ -66,6 +96,7 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
               strokeWidth={2}
               name="Principal"
               dot={{ r: 3 }}
+              isAnimationActive={!prefersReducedMotion}
             />
             <Line 
               type="monotone" 
@@ -74,6 +105,7 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
               strokeWidth={2}
               name="Interest"
               dot={{ r: 3 }}
+              isAnimationActive={!prefersReducedMotion}
             />
             <Line 
               type="monotone" 
@@ -82,6 +114,7 @@ export function AmortizationChart({ items, monthlyRent }: AmortizationChartProps
               strokeWidth={2}
               name="Cash Flow"
               dot={{ r: 3 }}
+              isAnimationActive={!prefersReducedMotion}
             />
           </LineChart>
         </ResponsiveContainer>

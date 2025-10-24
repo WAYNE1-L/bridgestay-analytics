@@ -1,5 +1,5 @@
 /**
- * Sharing utilities for ROI calculator data
+ * Sharing utilities for ROI calculator data with URL-safe base64 encoding
  */
 
 import type { RoiValues } from './schema'
@@ -18,7 +18,7 @@ export interface ShareableData {
 const CURRENT_VERSION = '1.0'
 
 /**
- * Encode data to URL-safe base64
+ * Encode data to URL-safe base64 (RFC 4648 Section 5)
  */
 function encodeData(data: ShareableData): string {
   try {
@@ -52,6 +52,45 @@ function decodeData(encoded: string): ShareableData {
   } catch {
     throw new Error('Failed to decode shared data')
   }
+}
+
+/**
+ * Generate shareable URL with encoded data
+ */
+export function generateShareUrl(data: RoiValues, metadata?: ShareableData['metadata']): string {
+  const shareableData: ShareableData = {
+    version: CURRENT_VERSION,
+    timestamp: Date.now(),
+    data,
+    metadata,
+  }
+  
+  const encoded = encodeData(shareableData)
+  const baseUrl = window.location.origin + window.location.pathname
+  return `${baseUrl}?s=${encoded}`
+}
+
+/**
+ * Parse shareable data from URL search params
+ */
+export function parseShareUrl(searchParams: URLSearchParams): ShareableData | null {
+  const encoded = searchParams.get('s')
+  if (!encoded) return null
+  
+  try {
+    return decodeData(encoded)
+  } catch (error) {
+    console.error('Failed to parse share URL:', error)
+    return null
+  }
+}
+
+/**
+ * Hydrate form data from URL if present
+ */
+export function hydrateFromUrl(searchParams: URLSearchParams): RoiValues | null {
+  const shareData = parseShareUrl(searchParams)
+  return shareData?.data || null
 }
 
 /**

@@ -36,11 +36,30 @@ export async function exportToPDF(
       throw new Error(`Element with id "${elementId}" not found`)
     }
 
-    // Add exporting class for CSS overrides
-    root.classList.add('exporting')
-
-    // Normalize colors to prevent oklch issues
-    await normalizeColors(root)
+    // Add exporting class for CSS overrides and print styles
+    root.classList.add('exporting', 'print-mode')
+    
+    // Apply print styles temporarily
+    const printStyles = document.createElement('style')
+    printStyles.setAttribute('data-print-styles', 'true')
+    printStyles.textContent = `
+      .print-mode {
+        color: #000 !important;
+        background: #fff !important;
+      }
+      .print-mode .no-print,
+      .print-mode button,
+      .print-mode .btn,
+      .print-mode .export-panel {
+        display: none !important;
+      }
+      .print-mode .card,
+      .print-mode .shadow {
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+      }
+    `
+    document.head.appendChild(printStyles)
 
     // Ensure images are CORS-enabled
     root.querySelectorAll('img').forEach((img) => {

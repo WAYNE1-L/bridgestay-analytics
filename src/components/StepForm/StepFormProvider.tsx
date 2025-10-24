@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import type { RoiValues } from '../../lib/schema'
+import { RoiSchema } from '../../lib/validation'
 
 export interface StepFormContextType {
   currentStep: number
@@ -7,6 +9,7 @@ export interface StepFormContextType {
   data: Partial<RoiValues>
   errors: Record<string, string>
   isValid: boolean
+  isStepValid: boolean
   goToStep: (step: number) => void
   nextStep: () => void
   prevStep: () => void
@@ -32,9 +35,67 @@ export function StepFormProvider({
   onStepChange,
   onDataChange,
 }: StepFormProviderProps) {
-  const [currentStep, setCurrentStep] = useState(0)
+  const location = useLocation()
+  const navigate = useNavigate()
+  
+  // Initialize step from URL hash
+  const getInitialStep = () => {
+    const hash = location.hash
+    const match = hash.match(/#step=(\d+)/)
+    return match ? Math.max(0, Math.min(parseInt(match[1], 10), totalSteps - 1)) : 0
+  }
+
+  const [currentStep, setCurrentStep] = useState(getInitialStep)
   const [data, setData] = useState<Partial<RoiValues>>(initialData)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Update URL hash when step changes
+  useEffect(() => {
+    const newHash = `#step=${currentStep}`
+    if (location.hash !== newHash) {
+      navigate(newHash, { replace: true })
+    }
+  }, [currentStep, location.hash, navigate])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        nextStep()
+      } else if (e.key === 'Enter' && e.shiftKey) {
+        e.preventDefault()
+        prevStep()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [nextStep, prevStep])
+
+  // Validate current step fields
+  const getStepFields = (step: number): (keyof RoiValues)[] => {
+    const stepFields: Record<number, (keyof RoiValues)[]> = {
+      0: ['purchasePrice', 'downPct', 'rentMonthly'], // Property info
+      1: ['interestPct', 'years', 'taxPct', 'insuranceMonthly', 'hoaMonthly'], // Financing
+      2: ['mgmtPct', 'maintPct', 'vacancyPct', 'expensesMonthly'], // Operating
+    }
+    return stepFields[step] || []
+  }
+
+  const validateCurrentStep = useCallback(() => {
+    const stepFields = getStepFields(currentStep)
+    const stepData: Partial<RoiValues> = {}
+    
+    stepFields.forEach(field => {
+      if (data[field] !== undefined) {
+        stepData[field] = data[field]
+      }
+    })
+
+    const result = RoiSchema.partial().safeParse(stepData)
+    return result.success
+  }, [currentStep, data])
 
   const goToStep = useCallback((step: number) => {
     if (step >= 0 && step < totalSteps) {
@@ -44,12 +105,12 @@ export function StepFormProvider({
   }, [totalSteps, onStepChange])
 
   const nextStep = useCallback(() => {
-    if (currentStep < totalSteps - 1) {
+    if (currentStep < totalSteps - 1 && validateCurrentStep()) {
       const next = currentStep + 1
       setCurrentStep(next)
       onStepChange?.(next)
     }
-  }, [currentStep, totalSteps, onStepChange])
+  }, [currentStep, totalSteps, onStepChange, validateCurrentStep])
 
   const prevStep = useCallback(() => {
     if (currentStep > 0) {
@@ -71,9 +132,11 @@ export function StepFormProvider({
     setCurrentStep(0)
     setData(initialData)
     setErrors({})
-  }, [initialData])
+    navigate('#step=0', { replace: true })
+  }, [initialData, navigate])
 
   const isValid = Object.keys(errors).length === 0
+  const isStepValid = validateCurrentStep()
 
   const value: StepFormContextType = {
     currentStep,
@@ -81,6 +144,7 @@ export function StepFormProvider({
     data,
     errors,
     isValid,
+    isStepValid,
     goToStep,
     nextStep,
     prevStep,
