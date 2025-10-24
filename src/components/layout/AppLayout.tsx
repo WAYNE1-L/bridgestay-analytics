@@ -3,6 +3,7 @@ import { Home, BarChart3, Calculator, FileText } from 'lucide-react'
 import { NavItem } from '../../types'
 import { ThemeToggle } from '../ui/ThemeToggle'
 import { LanguageSwitcher } from '../LanguageSwitcher'
+import { FooterVersion } from '../VersionDisplay'
 import { useTranslation } from 'react-i18next'
 
 export function AppLayout() {
@@ -67,6 +68,13 @@ export function AppLayout() {
       <main id="main-content" className="container mx-auto max-w-6xl px-6 py-10">
         <Outlet />
       </main>
+      
+      {/* Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto max-w-6xl px-6 py-6">
+          <FooterVersion />
+        </div>
+      </footer>
     </div>
   )
 }
