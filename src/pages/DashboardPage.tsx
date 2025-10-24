@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Home, DollarSign, TrendingUp, Eye } from 'lucide-react'
+import { Home, DollarSign, TrendingUp, Eye, RefreshCw } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { LoadingSkeleton, CardSkeleton, ChartSkeleton, TableSkeleton } from '../components/ui/LoadingSkeleton'
-import { NoDataEmptyState, ErrorEmptyState } from '../components/ui/EmptyState'
+import { EmptyState } from '../components/ui/EmptyState'
 import { fetchPropertySnapshots, fetchChartData, getSafePropertySnapshots, getSafeChartData } from '../lib/mock'
 import { calculateDashboardStats, sortSnapshotsByCashFlow } from '../lib/stats'
 import { usd, usdCompact, pct, date } from '../lib/format'
-import { PropertySnapshotSchema, ChartDataSchema } from '../types'
+import { PropertySnapshotSchema, ChartDataSchema, PropertySnapshot, ChartData } from '../types'
 
 export default function DashboardPage() {
-  const [snapshots, setSnapshots] = useState<typeof getSafePropertySnapshots extends () => infer T ? T : never[]>([])
-  const [chartData, setChartData] = useState<typeof getSafeChartData extends () => infer T ? T : never[]>([])
+  const [snapshots, setSnapshots] = useState<PropertySnapshot[]>([])
+  const [chartData, setChartData] = useState<ChartData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -90,11 +90,35 @@ export default function DashboardPage() {
   }
 
   if (error && snapshots.length === 0) {
-    return <ErrorEmptyState error={error} onRetry={handleRetry} />
+    return (
+      <EmptyState
+        title="Failed to Load Dashboard"
+        description={error}
+        icon="file"
+        action={
+          <Button onClick={handleRetry} className="mt-4">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Try Again
+          </Button>
+        }
+      />
+    )
   }
 
   if (snapshots.length === 0) {
-    return <NoDataEmptyState onRefresh={handleRetry} />
+    return (
+      <EmptyState
+        title="No Properties Yet"
+        description="Start by analyzing your first property to see it here."
+        icon="chart"
+        action={
+          <Button onClick={handleRetry} className="mt-4">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        }
+      />
+    )
   }
 
   const stats = calculateDashboardStats(snapshots)
