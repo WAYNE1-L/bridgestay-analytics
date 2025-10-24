@@ -3,7 +3,7 @@ import { Download, FileText, Image, Share2, Loader2, ChevronDown } from 'lucide-
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { exportToPDF, exportToPNG } from '../lib/export'
-import { generateShareUrl, copyShareUrl, exportAsJson } from '../lib/share'
+import { generateShareUrl } from '../lib/share'
 import type { RoiValues } from '../lib/schema'
 
 export interface ExportPanelProps {
@@ -42,13 +42,30 @@ export function ExportPanel({
         case 'png':
           result = await exportToPNG(elementId)
           break
-        case 'json':
+        case 'json': {
           if (!data) {
             throw new Error('No data available for JSON export')
           }
-          exportAsJson(data, metadata)
+          // Simple JSON export implementation
+          const jsonData = {
+            version: '1.0',
+            timestamp: Date.now(),
+            data,
+            metadata,
+          }
+          const json = JSON.stringify(jsonData, null, 2)
+          const blob = new Blob([json], { type: 'application/json' })
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `roi-calculator-${Date.now()}.json`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(url)
           result = { success: true, filename: `roi-calculator-${Date.now()}.json` }
           break
+        }
         default:
           throw new Error(`Unsupported export format: ${format}`)
       }
@@ -75,7 +92,8 @@ export function ExportPanel({
     }
 
     try {
-      await copyShareUrl(data, metadata)
+      const url = generateShareUrl(data, metadata)
+      await navigator.clipboard.writeText(url)
       alert('Share link copied to clipboard!')
     } catch (error) {
       console.error('Share Error:', error)
@@ -243,7 +261,24 @@ export function SimpleExportButton({
           filename: metadata?.propertyName || 'roi-report.png'
         })
       } else {
-        result = await exportAsJson(data, metadata)
+        // Simple JSON export implementation
+        const jsonData = {
+          version: '1.0',
+          timestamp: Date.now(),
+          data,
+          metadata,
+        }
+        const json = JSON.stringify(jsonData, null, 2)
+        const blob = new Blob([json], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `roi-calculator-${Date.now()}.json`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        result = { success: true, filename: `roi-calculator-${Date.now()}.json` }
       }
       
       onExport?.(result)
