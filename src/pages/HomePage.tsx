@@ -1,14 +1,10 @@
-import { useEffect } from 'react'
 import { Calculator, BarChart3, FileText } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 import { FeatureCard } from '../components/ui/FeatureCard'
 import { useTranslation } from 'react-i18next'
 
 export default function HomePage() {
   const { t } = useTranslation()
-  
-  useEffect(() => {
-    document.title = 'BridgeStay Analytics - Real Estate Investment Analysis'
-  }, [])
 
   const features = [
     {
@@ -39,6 +35,16 @@ export default function HomePage() {
 
   return (
     <>
+      <Helmet>
+        <title>BridgeStay Analytics - Real Estate Investment Analysis</title>
+        <meta name="description" content="Professional real estate investment analysis and property evaluation tools" />
+        <meta property="og:title" content="BridgeStay Analytics" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.origin} />
+        <meta property="og:description" content="Professional real estate investment analysis and property evaluation tools" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+      
       {/* Hero Section */}
       <div className="text-center space-y-6 mb-16">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">

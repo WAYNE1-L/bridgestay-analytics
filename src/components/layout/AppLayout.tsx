@@ -1,4 +1,5 @@
-import { Outlet, NavLink } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { Home, BarChart3, Calculator, FileText } from 'lucide-react'
 import { NavItem } from '../../types'
 import { ThemeToggle } from '../ui/ThemeToggle'
@@ -8,6 +9,13 @@ import { useTranslation } from 'react-i18next'
 
 export function AppLayout() {
   const { t } = useTranslation()
+  const location = useLocation()
+  const mainRef = useRef<HTMLElement>(null)
+
+  // Focus main content on route change for accessibility
+  useEffect(() => {
+    mainRef.current?.focus()
+  }, [location.pathname])
 
   const navigation: NavItem[] = [
     { name: t('nav.home'), href: '/', icon: Home },
@@ -65,7 +73,13 @@ export function AppLayout() {
         </nav>
       </header>
       
-      <main id="main-content" className="container mx-auto px-4 py-6">
+      <main 
+        id="main-content" 
+        ref={mainRef}
+        tabIndex={-1}
+        className="container mx-auto px-4 py-6 outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        role="main"
+      >
         <Outlet />
       </main>
       

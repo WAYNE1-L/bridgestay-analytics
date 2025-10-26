@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Calculator, DollarSign, Percent, TrendingUp, Copy, RotateCcw, Printer } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
@@ -156,6 +157,16 @@ export default function RoiPage() {
 
   return (
     <div id="roi-report-root" className="space-y-8">
+      <Helmet>
+        <title>BridgeStay ROI Calculator</title>
+        <meta name="description" content="Calculate GRM, Cap Rate, and ROI easily with our comprehensive real estate calculator" />
+        <meta property="og:title" content="BridgeStay ROI Calculator" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.origin + '/roi'} />
+        <meta property="og:description" content="Calculate GRM, Cap Rate, and ROI easily with our comprehensive real estate calculator" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+      
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
