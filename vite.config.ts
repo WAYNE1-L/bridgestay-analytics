@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { analyzer } from 'vite-bundle-analyzer'
 
 // https://vite.dev/config/
@@ -10,6 +11,13 @@ export default defineConfig({
   plugins: [
     react(), 
     tailwindcss(),
+    visualizer({
+      filename: 'stats.html',
+      template: 'treemap',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
     analyzer({
       analyzerMode: process.env.ANALYZE ? 'server' : 'disabled',
       openAnalyzer: true,
@@ -59,8 +67,9 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 200000, // 200KB
-    target: 'esnext',
+    chunkSizeWarningLimit: 1200, // 1.2MB
+    target: 'es2020',
+    sourcemap: false,
     minify: 'terser',
     terserOptions: {
       compress: {
