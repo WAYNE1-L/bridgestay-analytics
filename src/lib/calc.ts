@@ -140,6 +140,21 @@ export function calc(input: RoiInput): CalcResult {
 }
 
 /**
+ * Calculate GRM (Gross Rent Multiplier)
+ */
+export function calcGRM(price: number, rent: number): number {
+  const annualRent = rent * 12
+  return annualRent > 0 ? price / annualRent : 0
+}
+
+/**
+ * Calculate Cap Rate (Capitalization Rate)
+ */
+export function calcCapRate(noi: number, price: number): number {
+  return price > 0 ? (noi / price) * 100 : 0
+}
+
+/**
  * Validate input parameters
  */
 export function validateInput(input: RoiInput): { valid: boolean; errors: string[] } {
