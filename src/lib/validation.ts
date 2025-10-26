@@ -22,12 +22,14 @@ export const validate = (i: unknown) => {
   const r = RoiSchema.safeParse(i ?? {})
   if (!r.success) {
     const e: Record<string, string> = {}
-    // Null-safe forEach with guard
+    // Null-safe forEach with guard - prevent "Cannot read properties of undefined"
     const issues = r.error?.issues || []
-    issues.forEach(x => {
-      const key = x.path?.join('.') || 'unknown'
-      e[key] = x.message || 'Invalid value'
-    })
+    if (Array.isArray(issues)) {
+      issues.forEach(x => {
+        const key = x.path?.join('.') || 'unknown'
+        e[key] = x.message || 'Invalid value'
+      })
+    }
     return { ok: false, errors: e as Record<string, string> }
   }
   return { ok: true, values: r.data as RoiValues, errors: {} as Record<string, string> }
