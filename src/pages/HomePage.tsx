@@ -1,4 +1,4 @@
-import { Calculator, BarChart3, FileText } from 'lucide-react'
+import { Calculator, BarChart3, FileText, Bed } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { FeatureCard } from '../components/ui/FeatureCard'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +30,14 @@ export default function HomePage() {
       href: '/report',
       iconColor: 'text-purple-600',
       iconBgColor: 'bg-purple-50',
+    },
+    {
+      title: t('home.features.sublease.title'),
+      description: t('home.features.sublease.description'),
+      icon: Bed,
+      href: '/sublease',
+      iconColor: 'text-orange-600',
+      iconBgColor: 'bg-orange-50',
     },
   ]
 
@@ -74,7 +82,7 @@ export default function HomePage() {
       </div>
 
       {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
         {features.map((feature) => (
           <FeatureCard
             key={feature.title}

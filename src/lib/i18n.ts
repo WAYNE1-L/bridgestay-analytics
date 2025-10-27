@@ -16,6 +16,7 @@ const en = {
       dashboard: 'Dashboard',
       calculator: 'ROI Calculator',
       reports: 'Reports',
+      sublease: 'Sublease',
     },
     
     // Home page
@@ -37,6 +38,10 @@ const en = {
         reports: {
           title: 'Investment Reports',
           description: 'Generate professional reports for your investments',
+        },
+        sublease: {
+          title: 'Sublease Model',
+          description: 'Analyze sublease-to-Airbnb profitability',
         },
       },
     },
@@ -160,6 +165,7 @@ const zh = {
       dashboard: '仪表板',
       calculator: '投资回报率计算器',
       reports: '报告',
+      sublease: '转租',
     },
     
     // Home page
@@ -181,6 +187,10 @@ const zh = {
         reports: {
           title: '投资报告',
           description: '为您的投资生成专业报告',
+        },
+        sublease: {
+          title: '转租模式',
+          description: '分析转租至爱彼迎的盈利能力',
         },
       },
     },

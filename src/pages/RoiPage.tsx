@@ -11,6 +11,7 @@ import { safeUSD, safePct } from '../lib/format'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { useCalcWorker } from '../hooks/useCalcWorker'
 import type { RoiInput } from '../lib/calc'
+import { calcGRM, calcCapRate } from '../lib/calc'
 import { ExportPanel } from '../components/ExportPanel'
 
 // Lazy load the sensitivity chart

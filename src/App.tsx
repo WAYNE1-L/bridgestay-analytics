@@ -13,6 +13,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const RoiPage = lazy(() => import('./pages/RoiPage'))
 const ReportsPage = lazy(() => import('./pages/ReportsPage'))
+const SubleasePage = lazy(() => import('./pages/SubleasePage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 const router = createBrowserRouter([
@@ -52,6 +53,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading message="Loading reports..." />}>
             <ReportsPage />
+          </Suspense>
+        ),
+        errorElement: <ErrorElement />,
+      },
+      {
+        path: 'sublease',
+        element: (
+          <Suspense fallback={<Loading message="Loading sublease calculator..." />}>
+            <SubleasePage />
           </Suspense>
         ),
         errorElement: <ErrorElement />,

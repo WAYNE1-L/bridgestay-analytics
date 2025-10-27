@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
-import { Home, BarChart3, Calculator, FileText } from 'lucide-react'
+import { Home, BarChart3, Calculator, FileText, Bed } from 'lucide-react'
 import { NavItem } from '../../types'
 import { ThemeToggle } from '../ui/ThemeToggle'
 import { LanguageSwitcher } from '../LanguageSwitcher'
@@ -22,6 +22,7 @@ export function AppLayout() {
     { name: t('nav.dashboard'), href: '/dashboard', icon: BarChart3 },
     { name: t('nav.calculator'), href: '/roi', icon: Calculator },
     { name: t('nav.reports'), href: '/reports', icon: FileText },
+    { name: t('nav.sublease'), href: '/sublease', icon: Bed },
   ]
 
   return (
