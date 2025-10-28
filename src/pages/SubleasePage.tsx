@@ -28,6 +28,11 @@ export default function SubleasePage() {
   const [cleaningFeePerStay, setCleaningFeePerStay] = useState<number | null>(50)
   const [managementFeePercent, setManagementFeePercent] = useState<number | null>(15)
   const [otherExpenses, setOtherExpenses] = useState<number | null>(100)
+  
+  // === APPEND ONLY ===
+  const [selfManaged, setSelfManaged] = useState<boolean>(false)
+  const [withholdingPct, setWithholdingPct] = useState<number | null>(0)
+  const [cleaningCostPerStay, setCleaningCostPerStay] = useState<number | null>(0)
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -50,6 +55,10 @@ export default function SubleasePage() {
   const debouncedCleaningFeePerStay = useDebouncedValue(cleaningFeePerStay, 300)
   const debouncedManagementFeePercent = useDebouncedValue(managementFeePercent, 300)
   const debouncedOtherExpenses = useDebouncedValue(otherExpenses, 300)
+  
+  // === APPEND ONLY ===
+  const debouncedWithholdingPct = useDebouncedValue(withholdingPct, 300)
+  const debouncedCleaningCostPerStay = useDebouncedValue(cleaningCostPerStay, 300)
 
   // Validate on change
   useEffect(() => {
@@ -141,6 +150,11 @@ export default function SubleasePage() {
       cleaningFeePerStay: debouncedCleaningFeePerStay,
       managementFeePercent: debouncedManagementFeePercent,
       otherExpenses: debouncedOtherExpenses,
+      // === APPEND ONLY ===
+      selfManaged,
+      airbnbFeePct: 3, // Fixed 3% platform fee
+      withholdingPct: debouncedWithholdingPct ?? 0,
+      cleaningCostPerStay: debouncedCleaningCostPerStay ?? 0,
     }
   }, [
     debouncedNightlyRate,
@@ -152,6 +166,10 @@ export default function SubleasePage() {
     debouncedCleaningFeePerStay,
     debouncedManagementFeePercent,
     debouncedOtherExpenses,
+    // === APPEND ONLY ===
+    selfManaged,
+    debouncedWithholdingPct,
+    debouncedCleaningCostPerStay,
   ])
 
   // Perform calculation
@@ -202,6 +220,10 @@ export default function SubleasePage() {
     setCleaningFeePerStay(50)
     setManagementFeePercent(15)
     setOtherExpenses(100)
+    // === APPEND ONLY ===
+    setSelfManaged(false)
+    setWithholdingPct(0)
+    setCleaningCostPerStay(0)
     setErrors({})
   }
 
@@ -472,6 +494,58 @@ export default function SubleasePage() {
                 />
               </div>
             </div>
+            
+            {/* === APPEND ONLY === */}
+            {/* Self-Managed Toggle */}
+            <div className="space-y-2 md:col-span-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="selfManaged"
+                  checked={selfManaged}
+                  onChange={(e) => setSelfManaged(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <Label htmlFor="selfManaged" className="font-medium cursor-pointer">
+                  Self-Managed (removes management fee and cleaning costs)
+                </Label>
+              </div>
+            </div>
+            
+            {/* Tax Withholding Selector */}
+            <div className="space-y-2">
+              <Label htmlFor="withholding">Tax Withholding</Label>
+              <select
+                id="withholding"
+                value={withholdingPct ?? 0}
+                onChange={(e) => setWithholdingPct(Number(e.target.value))}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value={0}>W-9/US entity (0%)</option>
+                <option value={24}>Backup withholding (24%)</option>
+                <option value={30}>Nonresident/W-8BEN (30%)</option>
+                <option value={30}>No form on file (30%)</option>
+              </select>
+            </div>
+            
+            {/* Cleaning Cost Per Stay */}
+            {!selfManaged && (
+              <div className="space-y-2">
+                <Label htmlFor="cleaningCostPerStay">Cleaning Cost per Stay (Paid by Owner)</Label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
+                  <NumberInput
+                    value={cleaningCostPerStay}
+                    onValue={setCleaningCostPerStay}
+                    min={0}
+                    step={10}
+                    placeholder="0"
+                    className="pl-10"
+                    aria-label="Cleaning Cost Per Stay"
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
         </motion.div>
@@ -569,6 +643,41 @@ export default function SubleasePage() {
                       {safePct(result.profitMarginPercent)}
                     </span>
                   </div>
+                  
+                  {/* === APPEND ONLY === */}
+                  {/* Take-Home Metrics */}
+                  {result.airbnbPlatformFee !== undefined && result.airbnbPlatformFee > 0 && (
+                    <>
+                      <div className="flex justify-between items-center py-1 pt-2 border-t">
+                        <span className="text-sm font-medium text-muted-foreground">Airbnb Platform Fee (3%)</span>
+                        <span className="font-semibold">{safeUSD(viewMode === 'monthly' ? result.airbnbPlatformFee : (result.airbnbPlatformFee * 12))}</span>
+                      </div>
+                      {result.takeHomeAfterPlatformFee !== undefined && (
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm font-medium">Take-Home (After Platform Fee)</span>
+                          <span className={`font-semibold ${getProfitColor(viewMode === 'monthly' ? result.takeHomeAfterPlatformFee : (result.takeHomeAfterPlatformFee * 12))}`}>
+                            {safeUSD(viewMode === 'monthly' ? result.takeHomeAfterPlatformFee : (result.takeHomeAfterPlatformFee * 12))}
+                          </span>
+                        </div>
+                      )}
+                      {result.withholdingAmount !== undefined && result.withholdingAmount > 0 && (
+                        <>
+                          <div className="flex justify-between items-center py-1">
+                            <span className="text-sm text-muted-foreground">Tax Withholding</span>
+                            <span className="font-semibold">{safeUSD(viewMode === 'monthly' ? result.withholdingAmount : (result.withholdingAmount * 12))}</span>
+                          </div>
+                          {result.takeHomeAfterWithholding !== undefined && (
+                            <div className="flex justify-between items-center py-1">
+                              <span className="text-sm font-medium">Take-Home (After Withholding)</span>
+                              <span className={`font-semibold ${getProfitColor(viewMode === 'monthly' ? result.takeHomeAfterWithholding : (result.takeHomeAfterWithholding * 12))}`}>
+                                {safeUSD(viewMode === 'monthly' ? result.takeHomeAfterWithholding : (result.takeHomeAfterWithholding * 12))}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 {/* Break-even */}

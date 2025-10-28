@@ -1,15 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
-import { AppLayout } from '../components/layout/AppLayout'
-import { Loading } from '../components/ui/Loading'
-import { ErrorElement } from '../components/ErrorElement'
+import { AppLayout } from './components/layout/AppLayout'
+import { Loading } from './components/ui/Loading'
+import { ErrorElement } from './components/ErrorElement'
+import AppSkeleton from './components/AppSkeleton'
 
 // Lazy load all pages
-const HomePage = lazy(() => import('../pages/HomePage'))
-const DashboardPage = lazy(() => import('../pages/DashboardPage'))
-const RoiPage = lazy(() => import('../pages/RoiPage'))
-const ReportsPage = lazy(() => import('../pages/ReportsPage'))
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
+const HomePage = lazy(() => import('./pages/HomePage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const RoiPage = lazy(() => import('./pages/RoiPage'))
+const ReportsPage = lazy(() => import('./pages/ReportsPage'))
+const SubleasePage = lazy(() => import('./pages/SubleasePage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +22,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <Suspense fallback={<Loading message="Loading home..." />}>
+          <Suspense fallback={<AppSkeleton />}>
             <HomePage />
           </Suspense>
         ),
@@ -28,7 +30,7 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: (
-          <Suspense fallback={<Loading message="Loading dashboard..." />}>
+          <Suspense fallback={<AppSkeleton />}>
             <DashboardPage />
           </Suspense>
         ),
@@ -37,7 +39,7 @@ export const router = createBrowserRouter([
       {
         path: 'roi',
         element: (
-          <Suspense fallback={<Loading message="Loading calculator..." />}>
+          <Suspense fallback={<AppSkeleton />}>
             <RoiPage />
           </Suspense>
         ),
@@ -46,8 +48,17 @@ export const router = createBrowserRouter([
       {
         path: 'reports',
         element: (
-          <Suspense fallback={<Loading message="Loading reports..." />}>
+          <Suspense fallback={<AppSkeleton />}>
             <ReportsPage />
+          </Suspense>
+        ),
+        errorElement: <ErrorElement />,
+      },
+      {
+        path: 'sublease',
+        element: (
+          <Suspense fallback={<AppSkeleton />}>
+            <SubleasePage />
           </Suspense>
         ),
         errorElement: <ErrorElement />,
@@ -55,7 +66,7 @@ export const router = createBrowserRouter([
       {
         path: '*',
         element: (
-          <Suspense fallback={<Loading message="Loading..." />}>
+          <Suspense fallback={<AppSkeleton />}>
             <NotFoundPage />
           </Suspense>
         ),

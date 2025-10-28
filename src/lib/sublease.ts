@@ -14,6 +14,11 @@ export interface SubleaseInput {
   cleaningFeePerStay: number
   managementFeePercent: number // percentage (0-100)
   otherExpenses: number // monthly
+  // === APPEND ONLY ===
+  selfManaged?: boolean // default false
+  airbnbFeePct?: number // default 3
+  withholdingPct?: number // default 0
+  cleaningCostPerStay?: number // default 0
 }
 
 // Result types for sublease calculations
@@ -41,6 +46,13 @@ export interface SubleaseResult {
   // Efficiency metrics
   revenuePerNight: number
   costPerNight: number
+  
+  // === APPEND ONLY ===
+  // Airbnb-specific metrics
+  airbnbPlatformFee?: number // monthly platform fee
+  takeHomeAfterPlatformFee?: number // monthly, before withholding
+  takeHomeAfterWithholding?: number // monthly, after withholding
+  withholdingAmount?: number // monthly tax withholding
 }
 
 /**
@@ -105,22 +117,65 @@ export function calcSublease(input: SubleaseInput): SubleaseResult {
   const revenuePerNight = nightsBookedPerMonth > 0 ? monthlyRevenue / nightsBookedPerMonth : 0
   const costPerNight = nightsBookedPerMonth > 0 ? totalMonthlyCosts / nightsBookedPerMonth : 0
 
+  // === APPEND ONLY ===
+  // Handle Airbnb-specific settings with defaults
+  const selfManaged = input.selfManaged ?? false
+  const airbnbFeePct = input.airbnbFeePct ?? 3
+  const withholdingPct = input.withholdingPct ?? 0
+  const cleaningCostPerStay = input.cleaningCostPerStay ?? 0
+  
+  // Calculate actual management cost (0 if self-managed)
+  const actualManagementCost = selfManaged ? 0 : managementCostMonthly
+  
+  // Calculate cleaning cost paid by owner per stay (0 if self-managed)
+  const actualCleaningCost = selfManaged ? 0 : cleaningCostPerStay
+  
+  // Total cleaning costs paid by owner per month
+  const totalCleaningCostsMonthly = actualCleaningCost * bookingsPerMonth
+  
+  // Recalculate total monthly costs with actual management cost
+  const totalMonthlyCostsWithActual = 
+    rentPaidToLandlord + 
+    utilitiesMonthly + 
+    internetMonthly + 
+    actualManagementCost + 
+    otherExpenses
+  
+  // Calculate Airbnb platform fee (3% of gross revenue)
+  const airbnbPlatformFee = monthlyRevenue * (airbnbFeePct / 100)
+  
+  // Calculate take-home after platform fee but before withholding
+  const takeHomeAfterPlatformFee = monthlyRevenue - airbnbPlatformFee - totalMonthlyCostsWithActual - totalCleaningCostsMonthly
+  
+  // Calculate withholding amount (from take-home after platform fee and costs)
+  const withholdingAmount = takeHomeAfterPlatformFee * (withholdingPct / 100)
+  
+  // Calculate take-home after withholding
+  const takeHomeAfterWithholding = takeHomeAfterPlatformFee - withholdingAmount
+  
+  // Update costs based on self-managed toggle and cleaning costs
+  const actualTotalMonthlyCosts = totalMonthlyCostsWithActual + totalCleaningCostsMonthly
+  const actualCostPerStay = bookingsPerMonth > 0 ? actualTotalMonthlyCosts / bookingsPerMonth : 0
+  
+  // Calculate actual profit (after platform fee, with updated costs)
+  const actualMonthlyProfit = monthlyRevenue - airbnbPlatformFee - actualTotalMonthlyCosts
+  
   return {
     // Revenue
     monthlyBookings: bookingsPerMonth,
     monthlyRevenue,
     annualRevenue,
     
-    // Costs
-    totalMonthlyCosts,
-    costPerStay,
-    totalAnnualCosts,
+    // Costs - use updated costs when self-managed or cleaning costs are specified
+    totalMonthlyCosts: actualTotalMonthlyCosts,
+    costPerStay: actualCostPerStay,
+    totalAnnualCosts: actualTotalMonthlyCosts * 12,
     
-    // Profit metrics
-    netOperatingIncome,
-    monthlyProfit,
-    annualProfit,
-    profitMarginPercent,
+    // Profit metrics - use updated profit calculation
+    netOperatingIncome: actualMonthlyProfit * 12,
+    monthlyProfit: actualMonthlyProfit,
+    annualProfit: actualMonthlyProfit * 12,
+    profitMarginPercent: monthlyRevenue > 0 ? (actualMonthlyProfit / monthlyRevenue) * 100 : 0,
     
     // Break-even analysis
     breakEvenNightlyRate,
@@ -129,6 +184,13 @@ export function calcSublease(input: SubleaseInput): SubleaseResult {
     // Efficiency metrics
     revenuePerNight,
     costPerNight,
+    
+    // === APPEND ONLY ===
+    // Airbnb-specific metrics
+    airbnbPlatformFee,
+    takeHomeAfterPlatformFee,
+    takeHomeAfterWithholding,
+    withholdingAmount,
   }
 }
 
