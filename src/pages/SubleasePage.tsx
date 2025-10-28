@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
-import { Home, DollarSign, Percent, TrendingUp, Copy, RotateCcw, Printer } from 'lucide-react'
+import { Home, DollarSign, Percent, TrendingUp, Copy, RotateCcw, Printer, FileText } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
@@ -11,6 +12,8 @@ import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import type { SubleaseInput, SubleaseResult } from '../lib/sublease'
 import { calcSublease, validateSubleaseInput } from '../lib/sublease'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ReferenceDot } from 'recharts'
+import { saveLast, saveScenario } from '../lib/persist'
+import { exportToPDF } from '../lib/pdf'
 
 export default function SubleasePage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -103,6 +106,15 @@ export default function SubleasePage() {
     document.title = 'Sublease → Airbnb Calculator - BridgeStay Analytics'
   }, [])
 
+  // Read URL parameters on mount
+  useEffect(() => {
+    const occupancy = searchParams.get('occupancy')
+    if (occupancy) {
+      const val = Number(occupancy)
+      if (!isNaN(val) && val >= 0 && val <= 100) setOccupancyRate(val)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Prepare input for calculation
   const workerInput = useMemo((): SubleaseInput | null => {
     if (
@@ -164,6 +176,16 @@ export default function SubleasePage() {
     return data
   }, [workerInput])
 
+  // Save to localStorage when inputs/outputs are valid
+  useEffect(() => {
+    if (workerInput && result) {
+      saveLast('sublease', {
+        inputs: workerInput,
+        outputs: result,
+      })
+    }
+  }, [workerInput, result])
+
   const getProfitColor = (value: number) => {
     if (value > 0) return 'text-green-600'
     if (value === 0) return 'text-gray-600'
@@ -213,8 +235,26 @@ export default function SubleasePage() {
           <Button 
             variant="outline" 
             onClick={() => {
-              const url = new URL(window.location.href)
+              if (workerInput && result) {
+                saveScenario('sublease', { inputs: workerInput, outputs: result })
+                alert('Scenario saved!')
+              }
+            }}
+            className="gap-2"
+            disabled={!result}
+          >
+            <Copy className="h-4 w-4" />
+            Save Scenario
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              const url = new URL(window.location.origin + '/sublease')
               url.searchParams.set('period', viewMode)
+              if (occupancyRate !== null) url.searchParams.set('occupancy', occupancyRate.toString())
+              if (nightlyRate !== null) url.searchParams.set('nightlyRate', nightlyRate.toString())
+              if (averageStayLength !== null) url.searchParams.set('averageStayLength', averageStayLength.toString())
+              if (rentPaidToLandlord !== null) url.searchParams.set('rent', rentPaidToLandlord.toString())
               navigator.clipboard.writeText(url.toString())
             }} 
             className="gap-2"
@@ -226,12 +266,36 @@ export default function SubleasePage() {
             <Printer className="h-4 w-4" />
             Print Report
           </Button>
+          <Button 
+            variant="default" 
+            onClick={() => {
+              if (workerInput && result) {
+                exportToPDF({
+                  title: 'Sublease Analysis',
+                  type: 'sublease',
+                  inputs: workerInput,
+                  outputs: result,
+                })
+              }
+            }}
+            className="gap-2 bg-orange-600 hover:bg-orange-700"
+            disabled={!result}
+          >
+            <FileText className="h-4 w-4" />
+            Export PDF
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Input Form */}
-        <Card className="lg:col-span-2">
+        <motion.div
+          className="lg:col-span-2"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <Card>
           <CardHeader>
             <CardTitle>Sublease & Airbnb Settings</CardTitle>
             <CardDescription>Enter your property and Airbnb hosting details</CardDescription>
@@ -410,9 +474,15 @@ export default function SubleasePage() {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
 
         {/* Results */}
-        <Card>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+        >
+          <Card>
           <CardHeader>
             <div className="flex items-center justify-between mb-2">
               <CardTitle className="flex items-center gap-2">
@@ -578,6 +648,27 @@ export default function SubleasePage() {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="occupancySlider">Occupancy (%)</Label>
+                    <input
+                      type="range"
+                      id="occupancySlider"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={occupancyRate || 0}
+                      onChange={(e) => setOccupancyRate(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      aria-label="Occupancy Rate Slider"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>0%</span>
+                      <span>25%</span>
+                      <span>50%</span>
+                      <span>75%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
                   <p className="text-xs text-muted-foreground text-center">
                     Chart shows monthly profit • Blue dot shows current occupancy • Break-even at {safePct(result.breakEvenOccupancy)}
                   </p>
@@ -590,6 +681,7 @@ export default function SubleasePage() {
             )}
           </CardContent>
         </Card>
+        </motion.div>
       </div>
     </div>
   )

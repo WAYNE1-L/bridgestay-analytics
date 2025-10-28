@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Calculator, DollarSign, Percent, TrendingUp, Copy, RotateCcw, Printer } from 'lucide-react'
+import { Calculator, DollarSign, Percent, TrendingUp, Copy, RotateCcw, Printer, FileText } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
 import { Button } from '../components/ui/button'
@@ -13,6 +14,8 @@ import { useCalcWorker } from '../hooks/useCalcWorker'
 import type { RoiInput } from '../lib/calc'
 import { calcGRM, calcCapRate } from '../lib/calc'
 import { ExportPanel } from '../components/ExportPanel'
+import { saveLast, saveScenario } from '../lib/persist'
+import { exportToPDF } from '../lib/pdf'
 
 // Lazy load the sensitivity chart
 const SensitivityChart = React.lazy(() => import('../components/SensitivityChart'))
@@ -134,6 +137,16 @@ export default function RoiPage() {
   const valid = validationResult.ok && calcResult !== null
   const out = calcResult
 
+  // Save to localStorage when inputs/outputs are valid
+  useEffect(() => {
+    if (valid && workerInput && calcResult) {
+      saveLast('roi', {
+        inputs: workerInput,
+        outputs: calcResult,
+      })
+    }
+  }, [valid, workerInput, calcResult])
+
   const getCashFlowColor = (value: number) => {
     if (value > 0) return 'text-green-600'
     if (value === 0) return 'text-gray-600'
@@ -183,6 +196,20 @@ export default function RoiPage() {
             <RotateCcw className="h-4 w-4" />
             Reset
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              if (workerInput && calcResult) {
+                saveScenario('roi', { inputs: workerInput, outputs: calcResult })
+                alert('Scenario saved!')
+              }
+            }}
+            className="gap-2"
+            disabled={!valid}
+          >
+            <Copy className="h-4 w-4" />
+            Save Scenario
+          </Button>
           <Button variant="outline" onClick={() => navigator.clipboard.writeText(window.location.href)} className="gap-2">
             <Copy className="h-4 w-4" />
             Copy Link
@@ -191,12 +218,36 @@ export default function RoiPage() {
             <Printer className="h-4 w-4" />
             Print Report
           </Button>
+          <Button 
+            variant="default" 
+            onClick={() => {
+              if (workerInput && calcResult) {
+                exportToPDF({
+                  title: 'ROI Analysis',
+                  type: 'roi',
+                  inputs: workerInput,
+                  outputs: calcResult,
+                })
+              }
+            }}
+            className="gap-2 bg-blue-600 hover:bg-blue-700"
+            disabled={!valid}
+          >
+            <FileText className="h-4 w-4" />
+            Export PDF
+          </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Input Form */}
-        <Card className="lg:col-span-2">
+        <motion.div
+          className="lg:col-span-2"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <Card>
           <CardHeader>
             <CardTitle>Property Details & Financing</CardTitle>
             <CardDescription>Enter the property and loan information</CardDescription>
@@ -429,9 +480,15 @@ export default function RoiPage() {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
 
         {/* Results */}
-        <Card>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+        >
+          <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -555,6 +612,7 @@ export default function RoiPage() {
             )}
           </CardContent>
         </Card>
+        </motion.div>
       </div>
 
       {/* Sensitivity Chart */}

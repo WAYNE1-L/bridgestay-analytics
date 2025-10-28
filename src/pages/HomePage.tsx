@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { Calculator, BarChart3, FileText, Bed } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { FeatureCard } from '../components/ui/FeatureCard'
@@ -83,16 +84,22 @@ export default function HomePage() {
 
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
-        {features.map((feature) => (
-          <FeatureCard
+        {features.map((feature, index) => (
+          <motion.div
             key={feature.title}
-            title={feature.title}
-            description={feature.description}
-            icon={feature.icon}
-            href={feature.href}
-            iconColor={feature.iconColor}
-            iconBgColor={feature.iconBgColor}
-          />
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut", delay: index * 0.1 }}
+          >
+            <FeatureCard
+              title={feature.title}
+              description={feature.description}
+              icon={feature.icon}
+              href={feature.href}
+              iconColor={feature.iconColor}
+              iconBgColor={feature.iconBgColor}
+            />
+          </motion.div>
         ))}
       </div>
 
