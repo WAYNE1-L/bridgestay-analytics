@@ -27,7 +27,7 @@ export default function HomePage() {
       title: t('home.features.reports.title'),
       description: t('home.features.reports.description'),
       icon: FileText,
-      href: '/report',
+      href: '/reports',
       iconColor: 'text-purple-600',
       iconBgColor: 'bg-purple-50',
     },

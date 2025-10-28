@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { LucideIcon } from 'lucide-react'
 
@@ -19,8 +20,8 @@ export function FeatureCard({
   iconBgColor = 'bg-blue-50'
 }: FeatureCardProps) {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className={cn(
         'group relative block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm',
         'transition-all duration-200 ease-in-out',
@@ -57,6 +58,6 @@ export function FeatureCard({
           </svg>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }
